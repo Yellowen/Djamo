@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -----------------------------------------------------------------------------
 #    Djamo - Yetanother Mongodb driver for Django
 #    Copyright (C) 2012-2013 Yellowen
@@ -18,27 +17,13 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
 
-from setuptools import setup, find_packages
 
-setup(name='Djamo',
-      version='0.1.0',
-      description='Yet another Mongodb driver for Django',
-      author='Sameer Rahmani',
-      author_email='lxsameer@gnu.org',
-      url='http://djamo.yellowen.com/',
-      download_url="http://djamo.yellowen.com/downloads/",
-      keywords="web development mongo",
-      license='GPL v2',
-      packages=find_packages(),
-      install_requires=['django', 'pymongo' ],
-      classifiers=[
-          'Development Status :: 5 - Production/Stable',
-          'Environment :: Console',
-          'Intended Audience :: Developers',
-          'License :: OSI Approved :: GNU General Public License (GPL)',
-          'Operating System :: POSIX :: Linux',
-          'Programming Language :: Python',
-          'Topic :: Software Development :: Libraries :: Python Modules',
-          'Topic :: Utilities',
-          ]
-)
+class Document(dict):
+    """
+    Djamo implementation of Document.
+    """
+
+    def save(self, *args, **kwargs):
+        """
+        """
+        from djamo.db import client
