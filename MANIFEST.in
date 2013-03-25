@@ -1,0 +1,4 @@
+graft docs
+graft djamo
+
+include *.py *.json *.rst *.html COPYING
