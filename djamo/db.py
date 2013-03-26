@@ -23,7 +23,7 @@ from pymongo import MongoClient
 from django.conf import settings
 
 
-class Client(object):
+class Client(MongoClient):
     """
     Client class for Djamo that is responsible for connection management.
     """
@@ -33,31 +33,34 @@ class Client(object):
             if isinstance(settings.DJAMO, dict):
 
                 # Retrieve Mongo server information form settings.py
-                self.host = settings.DJAMO.get("host", "localhost")
-                self.port = int(settings.DJAMO.get("port", 27017))
-                self.db_name = settings.DJAMO.get("name", None)
-                self.max_pool_size = settings.DJAMO.get("max_pool_size", 10)
-                self.tz_awar = settings.USE_TZ
-                self.document_class = settings.DJAMO.get("document_class",
+                host = settings.DJAMO.get("host", "localhost")
+                port = int(settings.DJAMO.get("port", 27017))
+                db_name = settings.DJAMO.get("name", None)
+                max_pool_size = settings.DJAMO.get("max_pool_size", 10)
+                tz_awar = settings.USE_TZ
+
+                # TODO: Use our Document implementation
+                document_class = settings.DJAMO.get("document_class",
                                                          dict)
-                self.max_age = settings.DJAMO.get("MAX_AGE",
+                max_age = settings.DJAMO.get("MAX_AGE",
                                                   400)
 
+                # Calculate the client expiration date
+                self.expire_time = time.time() + max_age
 
-                self.expire_time = time.time() + self.max_age
-
-                if not self.db_name:
+                if not db_name:
                     raise TypeError("settings.DJAMO does not have 'name' key")
 
-                self._connection = MongoClient(self.host,
-                                               self.port,
-                                               self.max_pool_size,
-                                               self.document_class,
-                                               self.tz_awar,
+                self._connection = MongoClient(host, port,
+                                               max_pool_size,
+                                               document_class,
+                                               tz_awar,
                                                **kwargs)
 
                 # Get the Database from connection object
-                self.db = getattr(self._connection, self.db_name)
+                self._db = getattr(self._connection, db_name)
+
+                # TODO: Implement database authentication
 
             else:
                 raise TypeError("settings.DJAMO should be a dictionary")
@@ -72,6 +75,9 @@ class Client(object):
         if time.time() > self.expire_time:
             return True
         return False
+
+    def get_database(self):
+        return self._db
 
 
 client = Client()

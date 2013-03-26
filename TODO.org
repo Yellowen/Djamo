@@ -1,0 +1,3 @@
+* TODO
+
+  Provide authentication facility by using Database.authenticate

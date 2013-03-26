@@ -16,14 +16,25 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
+from pymongo.collection import Collection as MongoCollection
 
 
-class Document(dict):
+class Collection (MongoCollection):
     """
-    Djamo implementation of Document.
     """
 
-    def save(self, *args, **kwargs):
-        """
-        """
+    #: Class that will be use to as a document class for this collection
+    document = None
+
+    #: Specify the name of collection in database level. In case of a None
+    #: value current collection class name will use in lower case
+    name = None
+
+    def __init__(self, create=False, *args, **kwargs):
         from djamo.db import client
+
+        self.name = self.name or self.__class__.__name__.lower()
+        self.db = client.get_database()
+
+        super(Collection, self).__init__(self.db, self.name, create,
+                                         *args, **kwargs)
