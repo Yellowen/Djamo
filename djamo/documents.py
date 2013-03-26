@@ -38,6 +38,27 @@ class Document(dict):
     Djamo implementation of Document.
     """
 
+    def __init__(self, *args, **kwargs):
+        if len(args) > 0:
+            super(Document, self).__init__(args[0])
+        else:
+            super(Document, self).__init__(kwargs)
+
+        # User provided keys in subclass
+        _keyset = set(self._keys)
+
+        # The keys that user passed to init method
+        keyset = set(self.keys())
+
+        # Create a key and put a default value in it base on
+        # user provieded data on "keys" attribute in document
+        # defination.
+        for key in _keyset - keyset:
+            # for each key that user provided in the "keys"
+            # dictionary on document difination
+            if "default" in self._keys[key]:
+                self[key] == self._keys[key]["default"]
+
     def __getattr__(self, name):
         if name in self.keys():
             return self[name]
@@ -56,5 +77,26 @@ class Document(dict):
         else:
             raise AttributeError("No attribute called '%s'." % name)
 
+    def _validate_value(self, key):
+        """
+        Validate a value of an specific key against user provided
+        validator classes and current document validate_<key>
+        """
+
+        # Call each validator
+        if key in self._keys and "validators" in self._keys[key]:
+            map(self._keys["validators"],
+                lambda x: x.validate(self[key]))
+
+        # Call current document validate_<key>
+        validator = getattr(self, "validate_%s" % key, None)
+        if validator:
+            validator()
+
+
     def validate(self):
-        pass
+        """
+        Validate the current document against provided validators.
+        """
+
+        map(self._validate_value, self)
