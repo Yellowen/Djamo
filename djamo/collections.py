@@ -21,6 +21,7 @@ from pymongo.collection import Collection as MongoCollection
 
 class Collection (MongoCollection):
     """
+    Djamo implementation of Mongodb collection.
     """
 
     #: Class that will be use to as a document class for this collection

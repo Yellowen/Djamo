@@ -21,6 +21,7 @@ import time
 
 from pymongo import MongoClient
 from django.conf import settings
+from django.core.signals import request_finished
 
 
 class Client(MongoClient):
@@ -41,10 +42,11 @@ class Client(MongoClient):
 
                 # TODO: Use our Document implementation
                 document_class = settings.DJAMO.get("document_class",
-                                                         dict)
-                max_age = settings.DJAMO.get("MAX_AGE",
-                                                  400)
+                                                    dict)
 
+                # Connection aging options
+                max_age = settings.DJAMO.get("MAX_AGE",
+                                             400)
                 # Calculate the client expiration date
                 self.expire_time = time.time() + max_age
 
@@ -62,6 +64,11 @@ class Client(MongoClient):
 
                 # TODO: Implement database authentication
 
+                # Terminate connection after request finish.
+                # This is the default action until Django 1.5
+                # Django 1.6 will use Aging by default
+                request_finished.connection(self.terminate_connection)
+
             else:
                 raise TypeError("settings.DJAMO should be a dictionary")
         else:
@@ -78,6 +85,9 @@ class Client(MongoClient):
 
     def get_database(self):
         return self._db
+
+    def terminate_connection(self):
+        self.disconnect()
 
 
 client = Client()
