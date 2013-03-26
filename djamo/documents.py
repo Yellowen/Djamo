@@ -16,12 +16,19 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
+"""
+To create document you should subclass the **Document** or any subclasses of
+that.
+"""
 from six import with_metaclass
 
 
 class DocumentMeta(type):
     """
-    Meta class for Document object.
+    Meta class for Document object. This class is responsible for creating
+    ``Document`` instances.
+
+    .. Note:: This class is for Djamo internal usage.
     """
 
     def __new__(cls, name, bases, obj_dict):
@@ -33,9 +40,23 @@ class DocumentMeta(type):
 
 
 
-class Document(dict):
+class Document(with_metaclass(DocumentMeta, dict)):
     """
-    Djamo implementation of Document.
+    Djamo implementation of Document. Each document can have any
+    number of key/value pairs as user want, there is no limit. But
+    if user wants to provides some options and details about an
+    specific key he/she should add a ``keys`` property to their
+    subclass. ``keys`` is a dictionary object. Each key of ``keys``
+    property would be a document key and its value would be
+    another dictionary with some specific key/value. for example::
+
+        class students (Document):
+            keys = {"name": {"required": True},
+                    "uid": {"default": "0000000",
+                            "validators": [String(max_length=30)]}
+                   }
+
+    .. Note:: Remember that provide a ``keys`` attribute is optional
     """
 
     def __init__(self, *args, **kwargs):
@@ -51,10 +72,10 @@ class Document(dict):
         keyset = set(self.keys())
 
         # Create a key and put a default value in it base on
-        # user provieded data on "keys" attribute in document
+        # user provieded data on ``keys`` attribute in document
         # defination.
         for key in _keyset - keyset:
-            # for each key that user provided in the "keys"
+            # for each key that user provided in the ``keys``
             # dictionary on document difination
             if "default" in self._keys[key]:
                 self[key] == self._keys[key]["default"]
@@ -96,7 +117,8 @@ class Document(dict):
 
     def validate(self):
         """
-        Validate the current document against provided validators.
+        Validate the current document against provided validators and
+        current document validate_<key> method for each ``key``.
         """
 
         map(self._validate_value, self)
