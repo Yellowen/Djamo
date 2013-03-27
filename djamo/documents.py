@@ -122,3 +122,16 @@ class Document(with_metaclass(DocumentMeta, dict)):
         """
 
         map(self._validate_value, self)
+
+    def serialize(self):
+        pass
+
+    def deserialize(self, data):
+        pass
+
+    class ValidationError(Exception):
+        """
+        This exception will raise by validators objects or the validation
+        methods in case of any validation problem.
+        """
+        pass
