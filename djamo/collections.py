@@ -195,3 +195,55 @@ class Collection (MongoCollection, object):
         """
         data = self._prepare_data(doc_or_docs)
         return super(Collection, self).save(data, *args, **kwargs)
+
+
+    def update(self, spec, doc, *args, **kwargs):
+        """
+        Update a document(s) in this collection.
+
+        :param spec: A dict or SON instance specifying elements which must
+                     be present for a document to be updated
+
+        :param doc: a dict or SON instance specifying the document to be used
+                    for the update or (in the case of an upsert) insert - see
+                    docs on MongoDB update modifiers
+
+        :param upsert: (optional): perform an upsert if True
+
+        :param manipulate: (optional): If True manipulate the documents before
+                           inserting.
+
+        :param check_keys: (optional): If True check if keys start with ‘$’ or
+                           contain ‘.’, raising InvalidName in either case.
+
+        :param multi: (optional): update all documents that match spec,
+                      rather than just the first matching document. The
+                      default value for multi is currently False, but this
+                      might eventually change to True. It is recommended
+                      that you specify this argument explicitly for all update
+                      operations in order to prepare your code for that change.
+
+        :param w: (optional) (integer or string) If this is a replica set,
+                  write operations will block until they have been replicated
+                  to the specified number or tagged set of servers. w=<int>
+                  always includes the replica set primary (e.g. w=3 means write
+                  to the primary and wait until replicated to two secondaries).
+                  Passing w=0 disables write acknowledgement and all other
+                  write concern options.
+
+        :param wtimeout: (optional): (integer) Used in conjunction with w.
+                         Specify a value in milliseconds to control how
+                         long to wait for write propagation to complete.
+                         If replication does not complete in the given
+                         timeframe, a timeout exception is raised.
+
+        :param j: (optional): If True block until write operations have
+                  been committed to the journal. Ignored if the server is
+                  running without journaling.
+
+        :param fsync: (optional): If True force the database to fsync all
+                      files before returning. When used with j the server
+                      awaits the next group commit before returning.
+
+        """
+        super(Collection, self).update(spec, doc, *args, **kwargs)
