@@ -56,6 +56,7 @@ class Collection (MongoCollection, object):
         if self.document:
             if isinstance(self.document, Document):
                 return self.document
+
             raise TypeError("document property should be a 'Document' subclass")
         raise TypeError("document property should be not None value")
 
@@ -92,7 +93,7 @@ class Collection (MongoCollection, object):
 
         docs = doc_or_docs
         if isinstance(docs, list) or isinstance(docs, tuple):
-            docs = map(docs, self.validate_document)
+            docs = map(self.validate_document, docs)
 
         elif isinstance(docs, dict):
             docs = [self.validate_document(docs)]
@@ -100,7 +101,7 @@ class Collection (MongoCollection, object):
         else:
             raise TypeError("'doc_or_docs' should be dict or a list of dict like object")
 
-        data = map(docs, to_data)
+        data = map(to_data, data)
 
         return data
 

@@ -142,7 +142,11 @@ class Document(with_metaclass(DocumentMeta, dict)):
         use serializer of each key to serialize and deserialize data. If
         no serializer sepcified, ``serialize`` method will treat data
         just like common python data types withou serialization.
+
+        This method will return a dictionary from serialized data.
+
         """
+        self.validate()
         return dict(map(self._serialize_key, self))
 
     def _deserialize_key(self, key, value):
@@ -157,17 +161,34 @@ class Document(with_metaclass(DocumentMeta, dict)):
 
         self[key] = value
 
-    def deserialize(self, data):
+    def deserialize(self, data, validate=True, clear=True):
         """
         This method is responsible for de-serializing document data from
         database. If there was a serializer for a key it will call that
         otherwise simply treat the value like a python data type.
+
+        :param data: A dict-like data to de-serialize in current Document
+                     instance.
+
+        :param validate: (optional) de-serializer will validate de-serialized
+                         data after de-serializing process. *default*: **True**
+
+        :param clear: (optional) This argument cause all the current data of
+                      this Document instance clear before deserialization.
         """
+
         if isinstance(data, dict):
-            self.clear()
+
+            if clear:
+                # Clear current keys and values
+                self.clear()
+
             map(self._deserialize_key, data.items())
 
-        raise TypeError("'data' should be dict-like object")
+            if validate:
+                self.validate()
+        else:
+            raise TypeError("'data' should be dict-like object")
 
     class ValidationError(Exception):
         """
