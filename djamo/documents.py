@@ -190,6 +190,19 @@ class Document(with_metaclass(DocumentMeta, dict)):
         else:
             raise TypeError("'data' should be dict-like object")
 
+    @classmethod
+    def deserialize_item(cls, item):
+        """
+        Deserialize a query that stored in ``item`` tuple like: (key, value)
+        """
+        if item[0] in cls.keys:
+            serializer = cls.keys[item[0]].get("serializer", None)
+            if serializer:
+                # deserialize the value using serializer specified by user
+                return serializer.deserialize_query(item[1])
+
+        return item
+
     class ValidationError(Exception):
         """
         This exception will raise by validators objects or the validation
