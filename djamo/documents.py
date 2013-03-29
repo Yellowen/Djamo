@@ -201,7 +201,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
                 # deserialize the value using serializer specified by user
                 return serializer.deserialize_query(item[1])
 
-        return item
+        return {item[0]. item[1]}
 
     class ValidationError(Exception):
         """

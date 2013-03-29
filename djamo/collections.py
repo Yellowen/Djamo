@@ -246,4 +246,7 @@ class Collection (MongoCollection, object):
                       awaits the next group commit before returning.
 
         """
-        super(Collection, self).update(spec, doc, *args, **kwargs)
+        document = self._get_document()
+
+        update_document = map(document.deserialize_item, doc.items())
+        super(Collection, self).update(spec, update_document, *args, **kwargs)
