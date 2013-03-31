@@ -53,8 +53,8 @@ class Collection (MongoCollection, object):
                                          *args, **kwargs)
 
     def _get_document(self):
-        if self.document:
-            if isinstance(self.document, Document):
+        if self.document is not None:
+            if issubclass(self.document, Document):
                 return self.document
 
             raise TypeError("document property should be a 'Document' subclass")
@@ -101,7 +101,7 @@ class Collection (MongoCollection, object):
         else:
             raise TypeError("'doc_or_docs' should be dict or a list of dict like object")
 
-        data = map(to_data, data)
+        data = map(to_data, docs)
 
         return data
 
@@ -117,8 +117,8 @@ class Collection (MongoCollection, object):
         :param manipulate: (optional): If True manipulate the documents before
                            inserting.
 
-        :param check_keys: (optional): If True check if keys start with ‘$’ or
-                           contain ‘.’, raising InvalidName in either case.
+        :param check_keys: (optional): If True check if keys start with ``$`` or
+                           contain ``.``, raising InvalidName in either case.
 
         :param continue_on_error: (optional): If True, the database will not
                                   stop processing a bulk insert if one fails
@@ -167,8 +167,8 @@ class Collection (MongoCollection, object):
         :param manipulate: (optional): If True manipulate the documents before
                            inserting.
 
-        :param check_keys: (optional): If True check if keys start with ‘$’ or
-                           contain ‘.’, raising InvalidName in either case.
+        :param check_keys: (optional): If True check if keys start with ``$`` or
+                           contain ``.``, raising InvalidName in either case.
 
         :param w: (optional) (integer or string) If this is a replica set,
                   write operations will block until they have been replicated
@@ -213,8 +213,8 @@ class Collection (MongoCollection, object):
         :param manipulate: (optional): If True manipulate the documents before
                            inserting.
 
-        :param check_keys: (optional): If True check if keys start with ‘$’ or
-                           contain ‘.’, raising InvalidName in either case.
+        :param check_keys: (optional): If True check if keys start with ``$`` or
+                           contain ``.``, raising InvalidName in either case.
 
         :param multi: (optional): update all documents that match spec,
                       rather than just the first matching document. The

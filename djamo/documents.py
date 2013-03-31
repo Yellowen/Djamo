@@ -32,7 +32,12 @@ class DocumentMeta(type):
     """
 
     def __new__(cls, name, bases, obj_dict):
+
+        # Create the empty _keys dictionary
+        obj_dict["_keys"] = {}
         if "keys" in obj_dict:
+
+            # replace _keys with "keys" property
             obj_dict["_keys"] = obj_dict["keys"]
             del obj_dict
 

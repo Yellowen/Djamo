@@ -20,11 +20,13 @@
 import time
 
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+
 from django.conf import settings
 from django.core.signals import request_finished
 
 
-class Client(MongoClient):
+class Client(object):
     """
     Client class for Djamo that is responsible for connection management.
     """
@@ -53,11 +55,15 @@ class Client(MongoClient):
                 if not db_name:
                     raise TypeError("settings.DJAMO does not have 'name' key")
 
-                self._connection = MongoClient(host, port,
-                                               max_pool_size,
-                                               document_class,
-                                               tz_awar,
-                                               **kwargs)
+                try:
+                    self._connection = MongoClient(host, port,
+                                                   max_pool_size,
+                                                   document_class,
+                                                   tz_awar,
+                                                   **kwargs)
+                except ConnectionFailure:
+                    # TODO: Add some loggin here
+                    raise
 
                 # Get the Database from connection object
                 self._db = getattr(self._connection, db_name)
@@ -67,7 +73,7 @@ class Client(MongoClient):
                 # Terminate connection after request finish.
                 # This is the default action until Django 1.5
                 # Django 1.6 will use Aging by default
-                request_finished.connection(self.terminate_connection)
+                request_finished.connect(self.terminate_connection)
 
             else:
                 raise TypeError("settings.DJAMO should be a dictionary")
@@ -86,7 +92,7 @@ class Client(MongoClient):
     def get_database(self):
         return self._db
 
-    def terminate_connection(self):
+    def terminate_connection(self, *args, **kwargs):
         self.disconnect()
 
 
