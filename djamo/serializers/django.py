@@ -17,29 +17,16 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
 
+from .base import Serializer
 
-class Serializer(object):
+
+class DjangoUser(Serializer):
     """
-    Base class for all the serializer classes.
+    Serializer for Django users, This class will de-serialize the data from the
+    database to a django user and serialize the user normally to its user id.
     """
 
-    def __init__(self, required=False):
-        self.required = required
+    def __init__(self, user_field="pk", *args, **kwargs):
+        self.user_field = user_field
 
-    def validate(self, value):
-        if self.required and not value:
-
-            # TODO: Use a 'key' in the exception.
-            raise self.ValidationError("This field is required")
-
-    def serialize(self, value):
-        pass
-
-    def deserialize(self, value):
-        pass
-
-    class ValidationError(Exception):
-        """
-        This exception will raise in case of any validation problem.
-        """
-        pass
+        super(DjangoUser, self).__init__(*args, **kwargs)

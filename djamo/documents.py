@@ -109,8 +109,8 @@ class Document(with_metaclass(DocumentMeta, dict)):
         validator of the serializer class and current document validate_<key>
         """
         # Call each validator
-        if key in self._keys and "serializer" in self._keys[key]:
-            self._keys["serializer"].validate((self[key]))
+        if key in self._keys:
+            self._keys["key"].validate((self[key]))
 
         # Call current document validate_<key>
         validator = getattr(self, "validate_%s" % key, None)
@@ -132,9 +132,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
         (key, serialized_value)
         """
         if key in self._keys:
-            serializer = self._keys[key].get("serializer", None)
-            if serializer:
-                return (key, serializer.serialize(self[key]))
+            return (key, self._keys[key].serialize(self[key]))
 
         return (key, self[key])
 
@@ -157,10 +155,8 @@ class Document(with_metaclass(DocumentMeta, dict)):
         de-serialize each key/value using a serializer.
         """
         if key in self._keys:
-            serializer = self._keys[key].get("serializer", None)
-            if serializer:
-                self[key] = serializer.deserialize(value)
-                return
+            self[key] = self._keys[key].deserialize(value)
+            return True
 
         self[key] = value
 
@@ -199,16 +195,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
         Deserialize a query that stored in ``item`` tuple like: (key, value)
         """
         if item[0] in cls.keys:
-            serializer = cls.keys[item[0]].get("serializer", None)
-            if serializer:
-                # deserialize the value using serializer specified by user
-                return serializer.deserialize_query(item[1])
+            # deserialize the value using serializer specified by user
+            return cls.keys[item(0)].deserialize_query(item[1])
 
         return {item[0]: item[1]}
-
-    class ValidationError(Exception):
-        """
-        This exception will raise by validators objects or the validation
-        methods in case of any validation problem.
-        """
-        pass
