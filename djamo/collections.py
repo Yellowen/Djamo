@@ -250,3 +250,152 @@ class Collection (MongoCollection, object):
 
         update_document = map(document.deserialize_item, doc.items())
         super(Collection, self).update(spec, update_document, *args, **kwargs)
+
+    def remove(self, spec_or_id=None, **kwargs):
+        """
+        Remove a document(s) from this collection. returns A document (dict)
+        describing the effect of the remove or None if write acknowledgement
+        is disabled.
+
+        .. warning: Calls to remove() should be performed with care, as removed
+                    data cannot be restored
+
+        If spec_or_id is None, all documents in this collection will be removed.
+        This is not equivalent to calling drop_collection(), however, as
+        indexes will not be removed.
+
+        By default an acknowledgment is requested from the server that the
+        remove was successful, raising OperationFailure if an error occurred.
+        Passing ``w=0`` disables write acknowledgement and all other write
+        concern options.
+
+        :param spec_or_id: (optional): a dictionary specifying the documents to
+                           be removed OR any other type specifying the value of
+                           "_id" for the document to be removed
+
+        :param w: (optional): (integer or string) If this is a replica set,
+                  write operations will block until they have been replicated
+                  to the specified number or tagged set of servers. w=<int>
+                  always includes the replica set primary (e.g. w=3 means write
+                  to the primary and wait until replicated to two secondaries).
+                  Passing w=0 disables write acknowledgement and all other write
+                  concern options.
+
+        :param wtimeout: (optional) (integer) Used in conjunction with w.
+                         Specify a value in milliseconds to control how long
+                         to wait for write propagation to complete. If
+                         replication does not complete in the given timeframe,
+                         a timeout exception is raised.
+
+        :param j: (optional) If True block until write operations have been
+                             committed to the journal. Ignored if the server is
+                             running without journaling.
+
+        :param fsync: (optional) If True force the database to fsync all files
+                      before returning. When used with j the server awaits the
+                      next group commit before returning.
+        """
+        super(Collection, self).remove(spec_or_id, *args, **kwargs)
+
+    def find(self, spec=None, fields=None, *args, **kwargs):
+        """
+        make queries on database and current collection.
+
+        The spec argument is a prototype document that all results
+        must match. For example:
+
+            from .models import UserCollection
+
+            collection = UserCollection()
+            collection.find({"username": "Okarin"})
+
+        only matches documents that have a key "username" with value "Okarin".
+        Matches can have other keys in addition to "Okarin. The fields argument
+        is used to specify a subset of fields that should be included in the
+        result documents. By limiting results to a certain subset of fields
+        you can cut down on network traffic and decoding time.
+
+        :param spec: (optional) a SON object specifying elements which must be
+                     present for a document to be included in the result set.
+
+        :pram fields: (optional) a list of field names that should be returned
+                      in the result set or a dict specifying the fields to
+                      include or exclude. If fields is a list “_id” will always
+                      be returned. Use a dict to exclude fields from the result
+                      (e.g. fields={‘_id’: False}).
+
+        :param skip: (optional) the number of documents to omit (from the start
+                     of the result set) when returning the results
+        :param limit: (optional) the maximum number of results to return
+
+        :param timeout: (optional) if True, any returned cursor will be subject
+                        to the normal timeout behavior of the mongod process.
+                        Otherwise, the returned cursor will never timeout at
+                        the server. Care should be taken to ensure that cursors
+                        with timeout turned off are properly closed.
+
+        :param snapshot: (optional) if True, snapshot mode will be used for this
+                         query. Snapshot mode assures no duplicates are
+                         returned, or objects missed, which were present at both
+                         the start and end of the query’s execution. For
+                         details, see the snapshot documentation.
+
+        :param tailable: (optional) the result of this find call will be a
+                         tailable cursor - tailable cursors aren’t closed when
+                         the last data is retrieved but are kept open and the
+                         cursors location marks the final document’s position.
+                         if more data is received iteration of the cursor will
+                         continue from the last document received. For details,
+                         see the tailable cursor documentation.
+
+        :param sort: (optional) a list of (key, direction) pairs specifying the
+                     sort order for this query. See sort() for details. max_scan
+                     (optional): limit the number of documents examined when
+                     performing the query.
+
+        :param as_class: (optional) class to use for documents in the query
+                         result (default is document_class)
+
+        :param slave_okay: (optional) if True, allows this query to be run
+                           against a replica secondary.
+
+        :param await_data: (optional) if True, the server will block for some
+                           extra time before returning, waiting for more data
+                           to return. Ignored if tailable is False.
+
+        :param partial: (optional) if True, mongos will return partial results
+                        if some shards are down instead of returning an error.
+
+        :param manipulate: (optional) If True (the default), apply any outgoing
+                           SON manipulators before returning.
+
+        :param network_timeout: (optional) specify a timeout to use for this
+                                query, which will override the MongoClient-level
+                                default
+
+        :param read_preference: (optional) The read preference for this query.
+
+        :param tag_sets: (optional) The tag sets for this query.
+
+        :param secondary_acceptable_latency_ms: (optional) Any replica-set
+                                                member whose ping time is within
+                                                secondary_acceptable_latency_ms
+                                                of the nearest member may accept
+                                                reads. Default 15 milliseconds.
+                                                Ignored by mongos and must be
+                                                configured on the command line.
+                                                See the localThreshold option
+                                                for more information.
+        """
+        # TODO: use a validate parameter in this method to pass to deserialize
+        # method of document
+
+        document = self._get_document()
+        document_spec = map(document.deserialize_item, spec.items())
+        result = super(Collection, self).find(spec, fields, *args, **kwargs)
+
+        # deserialize each dictionary and return the document instances
+        # list
+        deserialized_result = map(result,
+                                  lambda x: document.deserialize(x).copy)
+        return deserialized_result

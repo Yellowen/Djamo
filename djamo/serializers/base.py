@@ -33,10 +33,13 @@ class Serializer(object):
             raise self.ValidationError("This field is required")
 
     def serialize(self, value):
-        pass
+        return value
 
     def deserialize(self, value):
-        pass
+        return value
+
+    def deserialize_item(self, item):
+        return {item[0]: item[1]}
 
     class ValidationError(Exception):
         """
