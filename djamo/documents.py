@@ -58,7 +58,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
         class students (Document):
             keys = {"name": {"required": True},
                     "uid": {"default": "0000000",
-                            "validators": [String(max_length=30)]}
+                            "serializer": UID()}
                    }
 
     .. Note:: Remember that provide a ``keys`` attribute is optional
@@ -106,10 +106,8 @@ class Document(with_metaclass(DocumentMeta, dict)):
     def _validate_value(self, key):
         """
         Validate a value of an specific key against user provided
-        validator classes and current document validate_<key>
+        validator of the serializer class and current document validate_<key>
         """
-
-
         # Call each validator
         if key in self._keys and "serializer" in self._keys[key]:
             self._keys["serializer"].validate((self[key]))
@@ -117,13 +115,13 @@ class Document(with_metaclass(DocumentMeta, dict)):
         # Call current document validate_<key>
         validator = getattr(self, "validate_%s" % key, None)
         if validator:
-            validator()
+            validator(self[key])
 
 
     def validate(self):
         """
-        Validate the current document against provided validators and
-        current document validate_<key> method for each ``key``.
+        Validate the current document against provided validators of serializer
+        and current document validate_<key> method for each ``key``.
         """
 
         map(self._validate_value, self)
