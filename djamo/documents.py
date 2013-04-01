@@ -109,10 +109,10 @@ class Document(with_metaclass(DocumentMeta, dict)):
         validator classes and current document validate_<key>
         """
 
+
         # Call each validator
-        if key in self._keys and "validators" in self._keys[key]:
-            map(self._keys["validators"],
-                lambda x: x.validate(self[key]))
+        if key in self._keys and "serializer" in self._keys[key]:
+            self._keys["serializer"].validate((self[key]))
 
         # Call current document validate_<key>
         validator = getattr(self, "validate_%s" % key, None)
@@ -206,7 +206,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
                 # deserialize the value using serializer specified by user
                 return serializer.deserialize_query(item[1])
 
-        return {item[0]. item[1]}
+        return {item[0], item[1]}
 
     class ValidationError(Exception):
         """
