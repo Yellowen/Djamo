@@ -23,11 +23,12 @@ class Serializer(object):
     Base class for all the serializer classes.
     """
 
-    def __init__(self, required=False):
-        self.required = required
+    def __init__(self, required=False, default=None):
+        self._required = required
+        self._default = default
 
     def validate(self, value):
-        if self.required and not value:
+        if self._required and not value:
 
             # TODO: Use a 'key' in the exception.
             raise self.ValidationError("This field is required")
@@ -40,6 +41,10 @@ class Serializer(object):
 
     def deserialize_item(self, item):
         return {item[0]: item[1]}
+
+    @property
+    def default_value(self):
+        return self._default
 
     class ValidationError(Exception):
         """

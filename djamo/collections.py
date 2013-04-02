@@ -60,6 +60,7 @@ class Collection (MongoCollection, object):
             raise TypeError("document property should be a 'Document' subclass")
         raise TypeError("document property should be not None value")
 
+
     def validate_document(self, doc):
         """
         Return a validated instance of the current collection document from
@@ -87,12 +88,16 @@ class Collection (MongoCollection, object):
         """
 
         def to_data(document):
+            # Return the serialized value of the document
             return document.serialize()
 
         document = self._get_document()
 
         docs = doc_or_docs
+
         if isinstance(docs, list) or isinstance(docs, tuple):
+            # If docs were a list or tuple of documents, validate each one
+            # and get a document instance with their data for each document
             docs = map(self.validate_document, docs)
 
         elif isinstance(docs, dict):
@@ -104,6 +109,27 @@ class Collection (MongoCollection, object):
         data = map(to_data, docs)
 
         return data
+
+    def _prepare_query(self, query):
+        """
+        Prepare query (spec).
+        """
+        if query is not None:
+
+            document = self._get_document()
+
+            # Deserialize each item in query by deserialize_item classmethod
+            # of document.
+            query_list = map(document.deserialize_item, query.items())
+
+            # Create a new dictionary from the list of deserialized queries
+            query = {}
+            map(lambda x: query.update(x),
+                query_list)
+
+            return query
+
+        return None
 
     def insert(self, doc_or_docs, *args, **kwargs):
         """
@@ -246,12 +272,8 @@ class Collection (MongoCollection, object):
                       awaits the next group commit before returning.
 
         """
-        document = self._get_document()
-        if spec:
-            spec = map(document.deserialize_item, spec.items())
-        if doc:
-            doc = map(document.deserialize_item, doc.items())
-
+        spec = self._prepare_query(spec)
+        doc = self._prepare_query(doc)
         return super(Collection, self).update(spec, doc, *args, **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
@@ -395,9 +417,7 @@ class Collection (MongoCollection, object):
         # TODO: use a validate parameter in this method to pass to deserialize
         # method of document
         document = self._get_document()
-        if spec:
-
-            spec = map(document.deserialize_item, spec.items())
+        spec = self._prepare_query(spec)
         result = super(Collection, self).find(spec,
                                               fields, *args, **kwargs)
 
@@ -419,10 +439,8 @@ class Collection (MongoCollection, object):
                            performed OR any other type to be used as the value
                            for a query for "_id".
         """
-        if spec_or_id:
-            document = self._get_document()
-            spec_or_id = map(document.deserialize_item,
-                             spec_or_id.items())
+        document = self._get_document()
+        spec_or_id = self._prepare_query(spec_or_id)
         result = super(Collection, self).find_one(spec_or_id, *args,
                                                   **kwargs)
         deserialized_result = document().deserialize(result)

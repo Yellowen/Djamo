@@ -20,7 +20,6 @@
 To create document you should subclass the **Document** or any subclasses of
 that.
 """
-import os
 from six import with_metaclass
 
 
@@ -35,11 +34,11 @@ class DocumentMeta(type):
     def __new__(cls, name, bases, obj_dict):
 
         # Create the empty _keys dictionary
-        obj_dict["_keys"] = {}
-        if "keys" in obj_dict:
+        obj_dict["_fields"] = {}
+        if "fields" in obj_dict:
 
             # replace _keys with "keys" property
-            obj_dict["_keys"] = obj_dict["keys"]
+            obj_dict["_fields"] = obj_dict["fields"]
             del obj_dict
 
         return type.__new__(cls, name, bases, obj_dict)
@@ -72,7 +71,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
             super(Document, self).__init__(kwargs)
 
         # User provided keys in subclass
-        _keyset = set(self._keys)
+        _keyset = set(self._fields)
 
         # The keys that user passed to init method
         keyset = set(self.keys())
@@ -81,10 +80,10 @@ class Document(with_metaclass(DocumentMeta, dict)):
         # user provieded data on ``keys`` attribute in document
         # defination.
         for key in _keyset - keyset:
-            # for each key that user provided in the ``keys``
+            # for each key that user provided in the ``fileds``
             # dictionary on document difination
-            if "default" in self._keys[key]:
-                self[key] == self._keys[key]["default"]
+            if self._fields[key].default_value:
+                self[key] == self._fields[key].default_value
 
     def __getattr__(self, name):
         if name in self.keys():
@@ -110,8 +109,8 @@ class Document(with_metaclass(DocumentMeta, dict)):
         validator of the serializer class and current document validate_<key>
         """
         # Call each validator
-        if key in self._keys:
-            self._keys["key"].validate((self[key]))
+        if key in self._fields:
+            self._fields["key"].validate((self[key]))
 
         # Call current document validate_<key>
         validator = getattr(self, "validate_%s" % key, None)
@@ -132,8 +131,8 @@ class Document(with_metaclass(DocumentMeta, dict)):
         Serialize each key/value and return a tuple like:
         (key, serialized_value)
         """
-        if key in self._keys:
-            return (key, self._keys[key].serialize(self[key]))
+        if key in self._fields:
+            return (key, self._fields[key].serialize(self[key]))
 
         return (key, self[key])
 
@@ -157,9 +156,8 @@ class Document(with_metaclass(DocumentMeta, dict)):
         """
         key, value = item
 
-        print ">>> ", key, value
-        if key in self._keys:
-            self[key] = self._keys[key].deserialize(value)
+        if key in self._fields:
+            self[key] = self._fields[key].deserialize(value)
             return True
 
         self[key] = value
@@ -201,8 +199,11 @@ class Document(with_metaclass(DocumentMeta, dict)):
         """
         Deserialize a query that stored in ``item`` tuple like: (key, value)
         """
-        if item[0] in cls.keys:
-            # deserialize the value using serializer specified by user
-            return cls.keys[item(0)].deserialize_query(item[1])
+        print ">>www>> ", item
+        fields = getattr(cls, "fields", None)
+        if fields and isinstance(fields, dict):
+            if item[0] in fields:
+                # deserialize the value using serializer specified by user
+                return fields[item(0)].deserialize_query(item[1])
 
         return {item[0]: item[1]}
