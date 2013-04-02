@@ -378,10 +378,12 @@ class Collection (MongoCollection, object):
         :param tag_sets: (optional) The tag sets for this query.
 
         :param secondary_acceptable_latency_ms: (optional) Any replica-set
-                                                member whose ping time is within
+                                                member whose ping time is
+                                                within
                                                 secondary_acceptable_latency_ms
-                                                of the nearest member may accept
-                                                reads. Default 15 milliseconds.
+                                                of the nearest member may
+                                                accept reads.
+                                                Default 15 milliseconds.
                                                 Ignored by mongos and must be
                                                 configured on the command line.
                                                 See the localThreshold option
@@ -392,10 +394,30 @@ class Collection (MongoCollection, object):
 
         document = self._get_document()
         document_spec = map(document.deserialize_item, spec.items())
-        result = super(Collection, self).find(spec, fields, *args, **kwargs)
+        result = super(Collection, self).find(document_spec,
+                                              fields, *args, **kwargs)
 
         # deserialize each dictionary and return the document instances
         # list
         deserialized_result = map(result,
-                                  lambda x: document.deserialize(x).copy)
+                                  lambda x: document.deserialize(x).copy())
+        return deserialized_result
+
+    def find_one(self, spec_or_id=None, *args, **kwargs):
+        """
+        Get a single document from the database. All arguments to find() are
+        also valid arguments for find_one(), although any limit argument will
+        be ignored. Returns a single document, or None if no matching document
+        is found.
+
+        :param spec_or_id: (optional) a dictionary specifying the query to be
+                           performed OR any other type to be used as the value
+                           for a query for "_id".
+        """
+        document = self._get_document()
+        document_spec = map(document.deserialize_item,
+                            spec_or_id.items())
+        result = super(Collection, self).find_one(document_spec, *args,
+                                                  **kwargs)
+        deserialized_result = document.deserialize(result).copy()
         return deserialized_result
