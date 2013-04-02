@@ -247,9 +247,12 @@ class Collection (MongoCollection, object):
 
         """
         document = self._get_document()
+        if spec:
+            spec = map(document.deserialize_item, spec.items())
+        if doc:
+            doc = map(document.deserialize_item, doc.items())
 
-        update_document = map(document.deserialize_item, doc.items())
-        super(Collection, self).update(spec, update_document, *args, **kwargs)
+        return super(Collection, self).update(spec, doc, *args, **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
         """
@@ -320,9 +323,9 @@ class Collection (MongoCollection, object):
 
         :pram fields: (optional) a list of field names that should be returned
                       in the result set or a dict specifying the fields to
-                      include or exclude. If fields is a list “_id” will always
-                      be returned. Use a dict to exclude fields from the result
-                      (e.g. fields={‘_id’: False}).
+                      include or exclude. If fields is a list ``_id`` will
+                      always be returned. Use a dict to exclude fields from the
+                      result (e.g. fields={`_id`: False}).
 
         :param skip: (optional) the number of documents to omit (from the start
                      of the result set) when returning the results
@@ -337,13 +340,13 @@ class Collection (MongoCollection, object):
         :param snapshot: (optional) if True, snapshot mode will be used for this
                          query. Snapshot mode assures no duplicates are
                          returned, or objects missed, which were present at both
-                         the start and end of the query’s execution. For
+                         the start and end of the query`s execution. For
                          details, see the snapshot documentation.
 
         :param tailable: (optional) the result of this find call will be a
-                         tailable cursor - tailable cursors aren’t closed when
+                         tailable cursor - tailable cursors aren`t closed when
                          the last data is retrieved but are kept open and the
-                         cursors location marks the final document’s position.
+                         cursors location marks the final document`s position.
                          if more data is received iteration of the cursor will
                          continue from the last document received. For details,
                          see the tailable cursor documentation.
@@ -391,16 +394,18 @@ class Collection (MongoCollection, object):
         """
         # TODO: use a validate parameter in this method to pass to deserialize
         # method of document
-
         document = self._get_document()
-        document_spec = map(document.deserialize_item, spec.items())
-        result = super(Collection, self).find(document_spec,
+        if spec:
+
+            spec = map(document.deserialize_item, spec.items())
+        result = super(Collection, self).find(spec,
                                               fields, *args, **kwargs)
 
         # deserialize each dictionary and return the document instances
         # list
-        deserialized_result = map(result,
-                                  lambda x: document.deserialize(x).copy())
+        deserialized_result = map(lambda x: document().deserialize(x),
+                                  result)
+
         return deserialized_result
 
     def find_one(self, spec_or_id=None, *args, **kwargs):
@@ -414,10 +419,11 @@ class Collection (MongoCollection, object):
                            performed OR any other type to be used as the value
                            for a query for "_id".
         """
-        document = self._get_document()
-        document_spec = map(document.deserialize_item,
-                            spec_or_id.items())
-        result = super(Collection, self).find_one(document_spec, *args,
+        if spec_or_id:
+            document = self._get_document()
+            spec_or_id = map(document.deserialize_item,
+                             spec_or_id.items())
+        result = super(Collection, self).find_one(spec_or_id, *args,
                                                   **kwargs)
-        deserialized_result = document.deserialize(result).copy()
+        deserialized_result = document().deserialize(result)
         return deserialized_result

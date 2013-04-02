@@ -20,6 +20,7 @@
 To create document you should subclass the **Document** or any subclasses of
 that.
 """
+import os
 from six import with_metaclass
 
 
@@ -150,10 +151,13 @@ class Document(with_metaclass(DocumentMeta, dict)):
         self.validate()
         return dict(map(self._serialize_key, self))
 
-    def _deserialize_key(self, key, value):
+    def _deserialize_key(self, item):
         """
         de-serialize each key/value using a serializer.
         """
+        key, value = item
+
+        print ">>> ", key, value
         if key in self._keys:
             self[key] = self._keys[key].deserialize(value)
             return True
@@ -182,10 +186,13 @@ class Document(with_metaclass(DocumentMeta, dict)):
                 # Clear current keys and values
                 self.clear()
 
-            map(self._deserialize_key, data.items())
+            map(self._deserialize_key, (data.items()))
 
             if validate:
                 self.validate()
+
+            return self.copy()
+
         else:
             raise TypeError("'data' should be dict-like object")
 
