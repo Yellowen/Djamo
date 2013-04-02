@@ -199,7 +199,6 @@ class Document(with_metaclass(DocumentMeta, dict)):
         """
         Deserialize a query that stored in ``item`` tuple like: (key, value)
         """
-        print ">>www>> ", item
         fields = getattr(cls, "fields", None)
         if fields and isinstance(fields, dict):
             if item[0] in fields:
