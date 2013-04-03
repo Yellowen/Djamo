@@ -440,8 +440,8 @@ class Collection (MongoCollection, object):
                            for a query for "_id".
         """
         document = self._get_document()
-        spec_or_id = self._prepare_query(spec_or_id)
-        result = super(Collection, self).find_one(spec_or_id, *args,
-                                                  **kwargs)
-        deserialized_result = document().deserialize(result)
-        return deserialized_result
+        result = self.find(spec_or_id, limit=-1, *args, **kwargs)
+        if result:
+            deserialized_result = document().deserialize(result[0])
+            return deserialized_result
+        return {}
