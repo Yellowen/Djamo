@@ -41,6 +41,12 @@ class Collection (MongoCollection, object):
     #: value current collection class name will use in lower case
     name = None
 
+    #: Index list for current collection, each element will be a index
+    #: dictionary according to mongodb standards. Each element should
+    #: be a list with index dictionary as its first element and index
+    #: options as its second.
+    indexes = []
+
     def __init__(self, create=False, *args, **kwargs):
         from djamo.db import client
 
@@ -51,6 +57,10 @@ class Collection (MongoCollection, object):
 
         super(Collection, self).__init__(self.db, self.name, create,
                                          *args, **kwargs)
+
+        if self.indexes:
+            map(lambda x: self.ensure_index(x[0], **x[1]),
+                self.indexes)
 
     def _get_document(self):
         if self.document is not None:
@@ -418,9 +428,11 @@ class Collection (MongoCollection, object):
         # method of document
         document = self._get_document()
         spec = self._prepare_query(spec)
-        result = super(Collection, self).find(spec,
-                                              fields, *args, **kwargs)
+        result = super(Collection, self).find(spec, fields, as_class=document,
+                                              *args, **kwargs)
 
+        map(lambda x: x.deserialize(), result)
+        return result.clone()
         # deserialize each dictionary and return the document instances
         # list
         deserialized_result = map(lambda x: document().deserialize(x),
