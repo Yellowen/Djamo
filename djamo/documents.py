@@ -183,18 +183,20 @@ class Document(with_metaclass(DocumentMeta, dict)):
         if data and not isinstance(data, dict):
             raise TypeError("'data' should be dict-like object")
 
-        if clear:
+        if data and clear:
             # Clear current keys and values
             self.clear()
 
         if not data:
             data = self
+            print "no data"
 
         map(self._deserialize_key, (data.items()))
 
         if validate:
             self.validate()
 
+        self["patch"] = 1
         return self
 
     @classmethod
