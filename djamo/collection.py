@@ -28,7 +28,7 @@ from djamo.documents import Document
 from djamo.cursor import DjamoCursor
 
 
-class Collection (MongoCollection, object):
+class DjamoCollection (MongoCollection, object):
     """
     Djamo implementation of Mongodb collection.
     """
@@ -48,6 +48,8 @@ class Collection (MongoCollection, object):
     #: options as its second.
     indexes = []
 
+    cursor = DjamoCursor
+
     def __init__(self, create=False, *args, **kwargs):
         from djamo.db import client
 
@@ -56,10 +58,8 @@ class Collection (MongoCollection, object):
         # Get the database instance from client
         self.db = client.get_database()
 
-        super(Collection, self).__init__(self.db, self.name, create,
+        super(DjamoCollection, self).__init__(self.db, self.name, create,
                                          *args, **kwargs)
-
-        self.cursor = DjamoCursor
 
         if self.indexes:
             map(lambda x: self.ensure_index(x[0], **x[1]),
@@ -192,7 +192,7 @@ class Collection (MongoCollection, object):
 
         """
         data = self._prepare_data(doc_or_docs)
-        return super(Collection, self).insert(data, *args, **kwargs)
+        return super(DjamoCollection, self).insert(data, *args, **kwargs)
 
     def save(self, doc_to_docs, *args, **kwargs):
         """
@@ -233,7 +233,7 @@ class Collection (MongoCollection, object):
 
         """
         data = self._prepare_data(doc_or_docs)
-        return super(Collection, self).save(data, *args, **kwargs)
+        return super(DjamoCollection, self).save(data, *args, **kwargs)
 
 
     def update(self, spec, doc, *args, **kwargs):
@@ -287,7 +287,7 @@ class Collection (MongoCollection, object):
         """
         spec = self._prepare_query(spec)
         doc = self._prepare_query(doc)
-        return super(Collection, self).update(spec, doc, *args, **kwargs)
+        return super(DjamoCollection, self).update(spec, doc, *args, **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
         """
@@ -333,7 +333,7 @@ class Collection (MongoCollection, object):
                       before returning. When used with j the server awaits the
                       next group commit before returning.
         """
-        super(Collection, self).remove(spec_or_id, *args, **kwargs)
+        super(DjamoCollection, self).remove(spec_or_id, *args, **kwargs)
 
     def find(self, spec=None, fields=None, *args, **kwargs):
         """
@@ -431,7 +431,7 @@ class Collection (MongoCollection, object):
         # method of document
         document = self._get_document()
         spec = self._prepare_query(spec)
-        result = super(Collection, self).find(spec, fields, as_class=document,
+        result = super(DjamoCollection, self).find(spec, fields, as_class=document,
                                               *args, **kwargs)
 
         return result

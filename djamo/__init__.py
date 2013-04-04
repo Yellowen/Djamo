@@ -1,3 +1,4 @@
+from collection import DjamoCollection as Collection
 ## import bson
 ## from bson import _element_to_dict
 
