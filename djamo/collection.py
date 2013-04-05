@@ -24,11 +24,11 @@ by subclassing the ``Collection`` base class.
 
 from pymongo.collection import Collection as MongoCollection
 
-from djamo.documents import Document
+from djamo.document import Document
 from djamo.cursor import DjamoCursor
 
 
-class DjamoCollection (MongoCollection, object):
+class Collection (MongoCollection, object):
     """
     Djamo implementation of Mongodb collection.
     """
@@ -58,7 +58,7 @@ class DjamoCollection (MongoCollection, object):
         # Get the database instance from client
         self.db = client.get_database()
 
-        super(DjamoCollection, self).__init__(self.db, self.name, create,
+        super(Collection, self).__init__(self.db, self.name, create,
                                          *args, **kwargs)
 
         if self.indexes:
@@ -192,7 +192,7 @@ class DjamoCollection (MongoCollection, object):
 
         """
         data = self._prepare_data(doc_or_docs)
-        return super(DjamoCollection, self).insert(data, *args, **kwargs)
+        return super(Collection, self).insert(data, *args, **kwargs)
 
     def save(self, doc_to_docs, *args, **kwargs):
         """
@@ -233,7 +233,7 @@ class DjamoCollection (MongoCollection, object):
 
         """
         data = self._prepare_data(doc_or_docs)
-        return super(DjamoCollection, self).save(data, *args, **kwargs)
+        return super(Collection, self).save(data, *args, **kwargs)
 
 
     def update(self, spec, doc, *args, **kwargs):
@@ -287,7 +287,7 @@ class DjamoCollection (MongoCollection, object):
         """
         spec = self._prepare_query(spec)
         doc = self._prepare_query(doc)
-        return super(DjamoCollection, self).update(spec, doc, *args, **kwargs)
+        return super(Collection, self).update(spec, doc, *args, **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
         """
@@ -333,7 +333,7 @@ class DjamoCollection (MongoCollection, object):
                       before returning. When used with j the server awaits the
                       next group commit before returning.
         """
-        super(DjamoCollection, self).remove(spec_or_id, *args, **kwargs)
+        super(Collection, self).remove(spec_or_id, *args, **kwargs)
 
     def find(self, spec=None, fields=None, *args, **kwargs):
         """
@@ -431,7 +431,7 @@ class DjamoCollection (MongoCollection, object):
         # method of document
         document = self._get_document()
         spec = self._prepare_query(spec)
-        result = super(DjamoCollection, self).find(spec, fields, as_class=document,
+        result = super(Collection, self).find(spec, fields, as_class=document,
                                               *args, **kwargs)
 
         return result

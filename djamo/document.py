@@ -39,10 +39,9 @@ class DocumentMeta(type):
 
             # replace _keys with "keys" property
             obj_dict["_fields"] = obj_dict["fields"]
-            del obj_dict
+            del obj_dict["fields"]
 
         return type.__new__(cls, name, bases, obj_dict)
-
 
 
 class Document(with_metaclass(DocumentMeta, dict)):
@@ -196,7 +195,6 @@ class Document(with_metaclass(DocumentMeta, dict)):
         if validate:
             self.validate()
 
-        self["patch"] = 1
         return self
 
     @classmethod

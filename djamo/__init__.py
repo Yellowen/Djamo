@@ -1,4 +1,6 @@
-from collection import DjamoCollection as Collection
+from collection import Collection
+from document import Document
+
 ## import bson
 ## from bson import _element_to_dict
 

@@ -26,6 +26,7 @@ from bson.son import SON
 from pymongo import helpers, message, read_preferences
 from pymongo.read_preferences import ReadPreference, secondary_ok_commands
 from pymongo.errors import InvalidOperation, AutoReconnect
+from pymongo.cursor import Cursor
 
 
 _QUERY_OPTIONS = {
@@ -38,7 +39,7 @@ _QUERY_OPTIONS = {
     "partial": 128}
 
 
-class DjamoCursor(object):
+class DjamoCursor(Cursor):
     """
     A cursor / iterator over Mongo query results. specialized for Djamo
     """
@@ -181,26 +182,25 @@ class DjamoCursor(object):
 
     def __clone(self, deepcopy=True):
         clone = self.__class__(self.__collection)
-        values_to_clone = ("spec", "fields", "skip", "limit",
-                           "timeout", "snapshot", "tailable",
-                           "ordering", "explain", "hint", "batch_size",
-                           "max_scan", "as_class",  "slave_okay", "await_data",
-                           "partial", "manipulate", "read_preference",
-                           "tag_sets", "secondary_acceptable_latency_ms",
-                           "must_use_master", "uuid_subtype", "query_flags",
-                           "kwargs")
+        values_to_clone = (
+            "spec", "fields", "skip", "limit",
+            "timeout", "snapshot", "tailable",
+            "ordering", "explain", "hint", "batch_size",
+            "max_scan", "as_class", "slave_okay", "await_data",
+            "partial", "manipulate", "read_preference",
+            "tag_sets", "secondary_acceptable_latency_ms",
+            "must_use_master", "uuid_subtype", "query_flags",
+            "kwargs"
+        )
 
         prefix = '_%s__' % self.__class__.__name__
         data = dict((k, v) for k, v in self.__dict__.iteritems()
-                    if k.startswith(prefix) and k[len(prefix):] in values_to_clone)
+            if k.startswith(prefix) and k[len(prefix):] in values_to_clone)
 
         if deepcopy:
             data = self.__deepcopy(data)
 
-        from pprint import pprint
-        pprint(data)
         clone.__dict__.update(data)
-        pprint(clone.__dict__)
         return clone
 
     def __die(self):
