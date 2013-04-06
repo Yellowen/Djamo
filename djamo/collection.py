@@ -36,7 +36,7 @@ class Collection (MongoCollection, object):
     #: Class that will be use as a document class for this collection. This
     #: class will be responsible for pickling and unpickling data to and
     #: from database.
-    document = None
+    document = dict
 
     #: Specify the name of collection in database level. In case of a None
     #: value current collection class name will use in lower case

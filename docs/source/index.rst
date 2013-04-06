@@ -8,7 +8,7 @@
 Welcome to Djamo's documentation!
 =================================
 
-Djamo is another python driver for Mongodb.
+**Djamo** is another wrapper (ORM like) package for `PyMmongo <http://api.mongodb.org/python/current/>`_ and `MongDB <http://www.mongodb.org/>`_. This documentation attempts to explain everything you need to know to use PyMongo
 
 Contents:
 

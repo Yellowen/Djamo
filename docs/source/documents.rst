@@ -1,5 +1,5 @@
 Djamo Document Implementation
 =============================
 
-.. automodule:: djamo.documents
+.. automodule:: djamo.document
    :members:

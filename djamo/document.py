@@ -188,7 +188,6 @@ class Document(with_metaclass(DocumentMeta, dict)):
 
         if not data:
             data = self
-            print "no data"
 
         map(self._deserialize_key, (data.items()))
 

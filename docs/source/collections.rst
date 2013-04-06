@@ -1,5 +1,5 @@
 Djamo Collection Implementation
 ===============================
 
-.. automodule:: djamo.collections
+.. automodule:: djamo.collection
    :members:

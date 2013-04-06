@@ -5,5 +5,5 @@ API Reference
    :maxdepth: 2
    :titlesonly:
 
-   Documents <documents.rst>
-   Collections <collections.rst>
+   Document <documents.rst>
+   Collection <collections.rst>
