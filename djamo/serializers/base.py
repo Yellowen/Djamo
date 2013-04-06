@@ -39,9 +39,6 @@ class Serializer(object):
     def deserialize(self, value):
         return value
 
-    def deserialize_item(self, item):
-        return {item[0]: item[1]}
-
     @property
     def default_value(self):
         return self._default

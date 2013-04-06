@@ -206,6 +206,6 @@ class Document(with_metaclass(DocumentMeta, dict)):
         if fields and isinstance(fields, dict):
             if item[0] in fields:
                 # deserialize the value using serializer specified by user
-                return fields[item(0)].deserialize_query(item[1])
+                return fields[item(0)].deserialize(item[1])
 
         return {item[0]: item[1]}

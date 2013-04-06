@@ -17,6 +17,8 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
 
+from django.contrib.auth import get_user_model
+
 from .base import Serializer
 
 
@@ -28,5 +30,24 @@ class DjangoUser(Serializer):
 
     def __init__(self, user_field="pk", *args, **kwargs):
         self.user_field = user_field
+        self._user_model = get_user_model()
 
         super(DjangoUser, self).__init__(*args, **kwargs)
+
+    def serialize(self, value):
+        """
+        Convert the Django User instance to an string.
+        """
+        if isinstance(value, self._user_model):
+            return getattr(value, self.user_field)
+
+        raise TypeError(
+            "'value' should be an instance of '%s'" % self._user_model
+        )
+
+    def deserialize(self, value):
+        """
+        Restore the string to Djano User.
+        """
+        params = {self.user_field: value}
+        return self._user_model.objects.get(**params)

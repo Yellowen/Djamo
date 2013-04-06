@@ -30,7 +30,7 @@ setup(name='Djamo',
       keywords="web development mongo",
       license='GPL v2',
       packages=find_packages(),
-      install_requires=['django', 'pymongo' ],
+      install_requires=['django', 'pymongo', 'six', ],
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Console',
