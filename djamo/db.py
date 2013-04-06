@@ -47,7 +47,7 @@ class Client(object):
                                                     dict)
 
                 # Connection aging options
-                max_age = settings.DJAMO.get("MAX_AGE",
+                max_age = settings.DJAMO.get("max_age",
                                              400)
                 # Calculate the client expiration date
                 self.expire_time = time.time() + max_age
