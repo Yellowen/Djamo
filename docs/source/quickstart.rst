@@ -25,15 +25,32 @@ Other useful class is :py:class:`~djamo.collection.Collection` which represent a
 
 Let's see some examples, Here is a simple Document/Collection to represent a Student::
 
-    From djamo import Collection, Document
+    from djamo import Collection, Document
 
 
-    Class Student (Document):
+    class Student (Document):
         pass
 
 
-    Class Students (Collection):
+    class Students (Collection):
        document = Student
 
 It's easy, isn't it? The `Student` class is document with no specific property and `Students` class is a collection that use `Student` document as its default document. Each collection should define a ``document`` attribute which used for serializing and de-serializing collection data, if no document specified **Djamo** will use normal python dictionary to work with collections data. Now its time to use above
-code and insert data into database.
+code and do some query on database::
+
+    student_a = Student({"name": "Uchiha Sasuke",
+                         "age": 19})
+
+    student_b = Sudent(name="Uzumaki Naruto", age=18, uid=3975611745)
+
+    student_c = Student()
+    student_c.name = "Rock Lee"
+    student_c["age"] = 21
+
+    students = Students()
+    students.insert([student_a, student_b])
+
+Here you can see that a :py:class:`~djamo.document.Document` subclass can be initialize eather by passing a dictionary or by using keyword argyments. Also you must know about how to access your document attributes, since document is a subclass of dict
+class you can access to a document attributes eather using normal dictionary indexing or class attributes.
+
+We used ``insert`` method of :py:class:`~djamo.collection.Collection` to put a list of students in our database.
