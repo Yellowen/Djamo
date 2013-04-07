@@ -20,7 +20,7 @@
 To create document you should subclass the **Document** or any subclasses of
 that.
 """
-from six import with_metaclass
+from djamo.utils.six import with_metaclass
 
 
 class DocumentMeta(type):
