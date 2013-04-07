@@ -53,13 +53,16 @@ code and do some query on database::
 Here you can see that a :py:class:`~djamo.document.Document` subclass can be initialize eather by passing a dictionary or by using keyword argyments. Also you must know about how to access your document attributes, since document is a subclass of dict
 class you can access to a document attributes eather using normal dictionary indexing or class attributes.
 
-We used :py:func:`~djamo.collection.Collection.insert` method of :py:class:`~djamo.collection.Collection` to put a list of students in our database. Remember documents are ``dict`` subclass and MongoDB did not force to stick with the same keys/values for your document, so your document can have any key/value pair your want.
+We used :py:func:`~djamo.collection.Collection.insert` method of :py:class:`~djamo.collection.Collection` to put a list of students in our database. Remember documents are ``dict`` subclass and MongoDB did not force to stick with the same keys/values for your document, so your document can have any key/value pair your want. :py:func:`~djamo.collection.Collection.insert` method will return a list of ``_id``s of
+the inserted documents or `None` if ``manipulate`` is False.
+
+.. note:: Returned ``_id`` value is an instance of **Object_id** class.
 
 After inserting data it is time to update them. Assume you want to change the ``school`` key of some students with specific ``age``::
 
     students = Students()
     students.update({"age": 18}, {"school": "school_A"})
 
-In above example we change the value of ``school`` key of all the students in the ``Students`` collection who are 18 years old, to ``school_A``. If they don't have a ``school`` key it will be created.
+In above example we used :py:func:`~djamo.collection.Collection.update` to change the value of ``school`` key of all the students in the ``Students`` collection who are 18 years old, to ``school_A``. If they don't have a ``school`` key it will be created.
 
 .. seealso:: For more information take a look at :py:class:`~djamo.collection.Collection`.

@@ -1,3 +1,9 @@
 * TODO
 
   Provide authentication facility by using Database.authenticate
+
+
+*  Bugs
+
+   Take a look at _prepare_{query/data} and resolve the update issue.
+   Find a proper way to deals with the serialize/deserialize fields which make a query on externals databases
