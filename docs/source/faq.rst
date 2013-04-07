@@ -3,7 +3,7 @@ FAQ
 
 1. What does Djamo means ?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-**Djamo** means nothing, its just Django + Mongo - go
+**Djamo** means nothing, its just Django + Mongo - ngo
 
 2. Why do you build an other one?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
