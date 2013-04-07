@@ -16,13 +16,22 @@ Contents:
    :maxdepth: 2
    :titlesonly:
 
+   Installation <installation.rst>
    Quick start <quickstart.rst>
-   Developer Mini Guide <devguide.rst>
    FAQ - Frequently asked questions <faq.rst>
    API Reference <api.rst>
 
 
+Report Bugs
+-----------
+You can report bugs and request features in our issue tracker in `github <https://github.com/Yellowen/Djamo/issues>`_.
 Indices and tables
+
+Contribute
+----------
+Contributions can be as simple as minor tweaks to this documentation. To contribute, fork the project on `github <https://github.com/Yellowen/Djamo>`_  and send a pull request.
+
+
 ==================
 
 * :ref:`genindex`

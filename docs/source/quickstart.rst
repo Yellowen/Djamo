@@ -53,4 +53,6 @@ code and do some query on database::
 Here you can see that a :py:class:`~djamo.document.Document` subclass can be initialize eather by passing a dictionary or by using keyword argyments. Also you must know about how to access your document attributes, since document is a subclass of dict
 class you can access to a document attributes eather using normal dictionary indexing or class attributes.
 
-We used ``insert`` method of :py:class:`~djamo.collection.Collection` to put a list of students in our database.
+We used :py:func:`~djamo.collection.Collection.insert` method of :py:class:`~djamo.collection.Collection` to put a list of students in our database.
+
+.. seealso:: For more information take a look at :py:class:`~djamo.collection.Collection`.
