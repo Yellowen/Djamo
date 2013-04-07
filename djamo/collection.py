@@ -102,7 +102,10 @@ class Collection (MongoCollection, object):
 
         def to_data(document):
             # Return the serialized value of the document
-            return document.serialize()
+            if hasattr(document, "serialize"):
+                return document.serialize()
+            else:
+                return document
 
         document = self._get_document()
 
@@ -133,7 +136,7 @@ class Collection (MongoCollection, object):
 
             # Deserialize each item in query by deserialize_item classmethod
             # of document.
-            query_list = map(document.deserialize_item, query.items())
+            query_list = map(document.serialize_item, query.items())
 
             # Create a new dictionary from the list of deserialized queries
             query = {}
