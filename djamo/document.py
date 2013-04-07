@@ -55,12 +55,13 @@ class Document(with_metaclass(DocumentMeta, dict)):
     another dictionary with some specific key/value. for example::
 
         class students (Document):
-            keys = {"name": {"required": True},
-                    "uid": {"default": "0000000",
-                            "serializer": UID()}
-                   }
+            fields = {
+                        "name": String(required=True, max_lenght=30),
+                        "age": Integer(min=5, max=40, default=20),
+                        "user": DjanogUser(required=True),
+                     }
 
-    .. Note:: Remember that provide a ``keys`` attribute is optional
+    .. Note:: Remember that providing a ``fields`` attribute is optional
     """
 
     def __init__(self, *args, **kwargs):
