@@ -110,7 +110,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
         """
         # Call each validator
         if key in self._fields:
-            self._fields["key"].validate((self[key]))
+            self._fields[key].validate((self[key]))
 
         # Call current document validate_<key>
         validator = getattr(self, "validate_%s" % key, None)

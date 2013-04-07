@@ -17,7 +17,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 
 from .base import Serializer
 
@@ -30,7 +30,15 @@ class DjangoUser(Serializer):
 
     def __init__(self, user_field="pk", *args, **kwargs):
         self.user_field = user_field
-        self._user_model = get_user_model()
+
+        if settings.AUTH_USER_MODEL != "auth.User":
+            from django.contrib.auth import get_user_model
+            print ">>>>> ", settings.AUTH_USER_MODEL
+            self._user_model = get_user_model()
+
+        else:
+            from django.contrib.auth.models import User
+            self._user_model = User
 
         super(DjangoUser, self).__init__(*args, **kwargs)
 
