@@ -206,6 +206,19 @@ class Document(with_metaclass(DocumentMeta, dict)):
         if fields and isinstance(fields, dict):
             if item[0] in fields:
                 # deserialize the value using serializer specified by user
-                return fields[item(0)].deserialize(item[1])
+                return {item[0], fields[item(0)].deserialize(item[1])}
+
+        return {item[0]: item[1]}
+
+    @classmethod
+    def serialize_item(cls, item):
+        """
+        Serialize a query that stored in ``item`` tuple like: (key, value)
+        """
+        fields = getattr(cls, "fields", None)
+        if fields and isinstance(fields, dict):
+            if item[0] in fields:
+                # Serialize the value using serializer specified by user
+                return fields[item(0)].serialize(item[1])
 
         return {item[0]: item[1]}

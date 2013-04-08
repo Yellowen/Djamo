@@ -126,24 +126,42 @@ class Collection (MongoCollection, object):
 
         return data
 
-    def _prepare_query(self, query):
+    def _prepare_query(self, query_item):
+        key, value = query_item
+
+        # If key was a mongo operator
+        if key.startswith("$"):
+
+            # Get the mongo operator handler
+            query_handler = getattr(self, "__%s_query__" % key[1:],
+                                    self.__query__)
+            return query_handler(key, value)
+
+        else:
+            if isinstance(value, dict):
+                # If current value was a dictionary
+                if any(map(lambda x: x.startswith("$"), value.keys())):
+                    # If one of the current value (which is a dictionary) was
+                    # a mongo query command and starts with $ then prepare
+                    # each key/value of it again
+                    return (key, map(self._prepare_query, value.items()))
+
+            document = self._get_document()
+
+            # Spliting using "." to allow document serializer find possible
+            # key and its attribute to handle the mongodb dot notation
+            return document.serialize_item((key.split(".")[0], value),
+                                           key.split("."))
+
+    def prepare_query(self, query):
         """
         Prepare query (spec).
         """
         if query is not None:
 
-            document = self._get_document()
-
-            # Deserialize each item in query by deserialize_item classmethod
+            # Serialize each item in query by serialize_item classmethod
             # of document.
-            query_list = map(document.serialize_item, query.items())
-
-            # Create a new dictionary from the list of deserialized queries
-            query = {}
-            map(lambda x: query.update(x),
-                query_list)
-
-            return query
+            return dict(map(self._prepare_query, query.items()))
 
         return None
 
@@ -462,3 +480,28 @@ class Collection (MongoCollection, object):
             deserialized_result = document().deserialize(result[0])
             return deserialized_result
         return {}
+
+    def __query__(self, key, value):
+
+        # TODO: can a operator have a dictionary value with another
+        #       operator as its key?
+        if isinstance(value, dict):
+            # If the operator value was a dictionary
+            return map(self._prepare_query, query.items())
+
+        elif isinstance(value, (tuple, list)):
+            # If the operator value was a list or tuple
+
+            # TODO: Does operators get this complex ?
+            def wrap(x):
+                if isinstance(x, dict):
+                    return map(self._prepare_query, query.items())
+                else:
+                    # If the list element was not a dict
+                    document = self._get_document()
+                    return document.serialize_item((key, x))[1]
+
+            return (key, map(wrap, value))
+
+        else:
+            return (key, value)
