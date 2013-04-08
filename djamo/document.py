@@ -211,7 +211,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
         return {item[0]: item[1]}
 
     @classmethod
-    def serialize_item(cls, item):
+    def serialize_item(cls, item, args=[]):
         """
         Serialize a query that stored in ``item`` tuple like: (key, value)
         """

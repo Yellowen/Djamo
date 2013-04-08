@@ -133,7 +133,7 @@ class Collection (MongoCollection, object):
         if key.startswith("$"):
 
             # Get the mongo operator handler
-            query_handler = getattr(self, "__%s_query__" % key[1:],
+            query_handler = getattr(self.Operators, "%s_query" % key[1:],
                                     self.__query__)
             return query_handler(key, value)
 
@@ -144,7 +144,7 @@ class Collection (MongoCollection, object):
                     # If one of the current value (which is a dictionary) was
                     # a mongo query command and starts with $ then prepare
                     # each key/value of it again
-                    return (key, map(self._prepare_query, value.items()))
+                    return {key: self.prepare_query(value)}
 
             document = self._get_document()
 
@@ -161,7 +161,10 @@ class Collection (MongoCollection, object):
 
             # Serialize each item in query by serialize_item classmethod
             # of document.
-            return dict(map(self._prepare_query, query.items()))
+            result = {}
+            result_list = map(self._prepare_query, query.items())
+            map(lambda x: result.update(x), result_list)
+            return result
 
         return None
 
@@ -487,7 +490,7 @@ class Collection (MongoCollection, object):
         #       operator as its key?
         if isinstance(value, dict):
             # If the operator value was a dictionary
-            return map(self._prepare_query, query.items())
+            return map(self._prepare_query, {key: value})
 
         elif isinstance(value, (tuple, list)):
             # If the operator value was a list or tuple
@@ -495,13 +498,16 @@ class Collection (MongoCollection, object):
             # TODO: Does operators get this complex ?
             def wrap(x):
                 if isinstance(x, dict):
-                    return map(self._prepare_query, query.items())
+                    return map(self._prepare_query, {key: value})
                 else:
                     # If the list element was not a dict
                     document = self._get_document()
-                    return document.serialize_item((key, x))[1]
+                    return document.serialize_item((key, x)).values()[0]
 
-            return (key, map(wrap, value))
+            return {key: map(wrap, value)}
 
         else:
-            return (key, value)
+            return {key: value}
+
+    class Operators:
+        pass
