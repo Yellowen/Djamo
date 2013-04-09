@@ -132,6 +132,10 @@ class Collection (MongoCollection, object):
         # If key was a mongo operator
         if key.startswith("$"):
 
+            # Q: Why did you use a nested class for operators ?
+            # A: Because pymongo collection class override the __getattr__
+            #    and we don't want to mess with that
+
             # Get the mongo operator handler
             query_handler = getattr(self.Operators, "%s_query" % key[1:],
                                     self.__query__)
@@ -510,4 +514,9 @@ class Collection (MongoCollection, object):
             return {key: value}
 
     class Operators:
-        pass
+
+        def pop_update(self, value, *args, **kwargs):
+            """
+            Handle the $pop operator for document update.
+            """
+            return {"$pop": value}
