@@ -515,8 +515,26 @@ class Collection (MongoCollection, object):
 
     class Operators:
 
-        def pop_update(self, value, *args, **kwargs):
+        # TODO: deal with push, addtoset, each, slice and sort update
+        # operators
+        def pop_update(self, value, document, *args, **kwargs):
             """
             Handle the $pop operator for document update.
             """
             return {"$pop": value}
+
+        def bit_update(self, value, document,  *args, **kwargs):
+            """
+            Handle the $bit operator for document update.
+            """
+            for field, bit_op in value.items():
+                for op, v in bit_op.items():
+                    # serialize the v (value of the bit operator) and replace
+                    # the old value
+                    bit_op[op] = document.serialize_item((field, v)).values()[1]
+
+            return {"$bit": value}
+
+        def isolated_update(self, value, document, *args, **kwargs):
+            # TODO: deal with the isolated operator
+            pass
