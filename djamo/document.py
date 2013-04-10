@@ -95,8 +95,11 @@ class Document(with_metaclass(DocumentMeta, dict)):
 
     def __getitem__(self, name):
         if name in self._fields:
-            if self._fields[name].is_valid(self["name"]):
-                pass
+            value = super(Document, self).__getitem__(name)
+            if self._fields[name].is_valid(value):
+                return value
+            else:
+                self._fields[name].deserialize(value)
         else:
             return super(Document, self).__getitem__(name)
 
