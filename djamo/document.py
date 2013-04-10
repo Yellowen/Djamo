@@ -22,6 +22,8 @@ that.
 """
 from djamo.utils.six import with_metaclass
 
+from .cache import dummy_cache
+
 
 class DocumentMeta(type):
     """
@@ -91,11 +93,24 @@ class Document(with_metaclass(DocumentMeta, dict)):
 
         raise AttributeError("No attribute called '%s'." % name)
 
+    def __getitem__(self, name):
+        if name in self._fields:
+            if self._fields[name].is_valid(self["name"]):
+                pass
+        else:
+            return super(Document, self).__getitem__(name)
+
     def __setattr__(self, name, value):
         if name in self.keys():
             self[name] = value
         else:
             raise AttributeError("No attribute called '%s'." % name)
+
+    def __setitem__(self, name, value):
+        if name in self._fields:
+            pass
+        else:
+            return super(Document, self).__setitem__(name, value)
 
     def __delattr__(self, name):
         if name in self.keys():
