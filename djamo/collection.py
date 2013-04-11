@@ -25,7 +25,6 @@ by subclassing the ``Collection`` base class.
 from pymongo.collection import Collection as MongoCollection
 
 from djamo.document import Document
-from djamo.cursor import DjamoCursor
 
 
 class Collection (MongoCollection, object):
@@ -47,8 +46,6 @@ class Collection (MongoCollection, object):
     #: be a list with index dictionary as its first element and index
     #: options as its second.
     indexes = []
-
-    cursor = DjamoCursor
 
     def __init__(self, create=False, *args, **kwargs):
         from djamo.db import client
@@ -463,12 +460,6 @@ class Collection (MongoCollection, object):
                                               *args, **kwargs)
 
         return result
-        # deserialize each dictionary and return the document instances
-        # list
-        deserialized_result = map(lambda x: document().deserialize(x),
-                                  result)
-
-        return deserialized_result
 
     def find_one(self, spec_or_id=None, *args, **kwargs):
         """

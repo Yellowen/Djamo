@@ -100,7 +100,22 @@ class Document(with_metaclass(DocumentMeta, dict)):
 
         return default
 
-    def _get_item_value(self, name):
+    def _put_to_cache(self, cache_name, raw_value, value):
+        """
+        Put value for raw_value to cache_name cache.
+        """
+        if cache_name in dummy_cache:
+            dummy_cache[cache_name][raw_value] = value
+        else:
+            dummy_cache[cache_name] = {raw_value: value}
+
+    def __getattr__(self, name):
+        if name in self.keys():
+            return self[name]
+
+        raise AttributeError("No attribute called '%s'." % name)
+
+    def __getitem__(self, name):
         if name in self._fields:
             # If current key has associated with a serializer
 
@@ -126,29 +141,13 @@ class Document(with_metaclass(DocumentMeta, dict)):
                     new_value = self._fields[name].deserialize(value)
 
                     # Put the deserialized value into cache
-                    self._put_to_cache(name, value, new_value)
+                    self._put_to_cache(cache_name, value, new_value)
                     return new_value
 
                 else:
                     # Return the cached value
                     return value
 
-        else:
-            return super(Document, self).__getitem__(name)
-
-    def __getattr__(self, name):
-        if name in self.keys():
-            return self[name]
-
-        raise AttributeError("No attribute called '%s'." % name)
-
-    def __getitem__(self, name):
-        if name in self._fields:
-            value = super(Document, self).__getitem__(name)
-            if self._fields[name].is_valid(value):
-                return value
-            else:
-                self._fields[name].deserialize(value)
         else:
             return super(Document, self).__getitem__(name)
 
@@ -160,9 +159,18 @@ class Document(with_metaclass(DocumentMeta, dict)):
 
     def __setitem__(self, name, value):
         if name in self._fields:
-            pass
-        else:
-            return super(Document, self).__setitem__(name, value)
+
+            if not self._fields[name].is_valid_value(value):
+                new_value = self._fields[name].deserialize(value)
+                # TODO: Should we put the value into cache ?
+                #       Since setting item to dictionary will
+                #       not probebly execute no performance critical
+                #       task.
+                # self._put_to_cache
+
+                return super(Document, self).__setitem__(name, new_value)
+
+        return super(Document, self).__setitem__(name, value)
 
     def __delattr__(self, name):
         if name in self.keys():
