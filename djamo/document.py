@@ -87,6 +87,55 @@ class Document(with_metaclass(DocumentMeta, dict)):
             if self._fields[key].default_value:
                 self[key] == self._fields[key].default_value
 
+    def _get_from_cache(self, serializer_name, raw_value, default=None):
+        """
+        Get the available value of specfied key in raw_value from
+        serializer_name dictionary
+        """
+        if serializer_name in dummy_cache:
+            if raw_value in dummy_cache[name]:
+                return dummy_cache[serializer_name][raw_value]
+
+            return default
+
+        return default
+
+    def _get_item_value(self, name):
+        if name in self._fields:
+            # If current key has associated with a serializer
+
+            # Get current value of current key (raw value)
+            value = super(Document, self).__getitem__(name)
+
+            if self._fields[name].is_valid_value(value):
+                # If current value was a valid value (already deserialized)
+                return value
+
+            else:
+
+                # Cechking for existance of current value in cache
+                # TODO: Check for much effecient caching algorithm
+                cache_name = self._fields[name].__class__.__name__
+
+                # Get the cached value of current raw value
+                cached_value = self._get_from_cache(cache_name, value)
+
+                if cached_value is None:
+                    # If there was no cached value
+                    # Deserialize the raw value
+                    new_value = self._fields[name].deserialize(value)
+
+                    # Put the deserialized value into cache
+                    self._put_to_cache(name, value, new_value)
+                    return new_value
+
+                else:
+                    # Return the cached value
+                    return value
+
+        else:
+            return super(Document, self).__getitem__(name)
+
     def __getattr__(self, name):
         if name in self.keys():
             return self[name]

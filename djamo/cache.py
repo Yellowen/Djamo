@@ -19,6 +19,10 @@
 
 
 class DummyCache(dict):
+    """
+    A dummy cache class to store deserialized item of documents to privent
+    serializers to do not efficient jobs like database queries.
+    """
     pass
 
 
