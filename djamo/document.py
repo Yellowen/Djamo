@@ -152,10 +152,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
             return super(Document, self).__getitem__(name)
 
     def __setattr__(self, name, value):
-        if name in self.keys():
-            self[name] = value
-        else:
-            raise AttributeError("No attribute called '%s'." % name)
+        self[name] = value
 
     def __setitem__(self, name, value):
         if name in self._fields:

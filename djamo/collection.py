@@ -124,6 +124,7 @@ class Collection (MongoCollection, object):
         return data
 
     def _prepare_query(self, query_item):
+
         key, value = query_item
 
         # If key was a mongo operator
@@ -455,7 +456,10 @@ class Collection (MongoCollection, object):
         # TODO: use a validate parameter in this method to pass to deserialize
         # method of document
         document = self._get_document()
-        spec = self._prepare_query(spec)
+
+        if spec:
+            spec = self._prepare_query(spec)
+
         result = super(Collection, self).find(spec, fields, as_class=document,
                                               *args, **kwargs)
 
@@ -472,12 +476,7 @@ class Collection (MongoCollection, object):
                            performed OR any other type to be used as the value
                            for a query for "_id".
         """
-        document = self._get_document()
-        result = self.find(spec_or_id, limit=-1, *args, **kwargs)
-        if result:
-            deserialized_result = document().deserialize(result[0])
-            return deserialized_result
-        return {}
+        return self.find(spec_or_id, limit=-1, *args, **kwargs)
 
     def __query__(self, key, value):
 

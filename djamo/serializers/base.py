@@ -43,8 +43,18 @@ class Serializer(object):
     def default_value(self):
         return self._default
 
+    def is_valid_value(self, value):
+        raise self.NotImplemented()
+
     class ValidationError(Exception):
         """
         This exception will raise in case of any validation problem.
+        """
+        pass
+
+    class NotImplemented(Exception):
+        """
+        This exception will raise if any necessary methods does not
+        override in subclasses.
         """
         pass

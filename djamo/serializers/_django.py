@@ -33,7 +33,6 @@ class DjangoUser(Serializer):
 
         if settings.AUTH_USER_MODEL != "auth.User":
             from django.contrib.auth import get_user_model
-            print ">>>>> ", settings.AUTH_USER_MODEL
             self._user_model = get_user_model()
 
         else:
@@ -59,3 +58,8 @@ class DjangoUser(Serializer):
         """
         params = {self.user_field: value}
         return self._user_model.objects.get(**params)
+
+    def is_valid_value(self, value):
+        if isinstance(value, self._user_model):
+            return True
+        return False
