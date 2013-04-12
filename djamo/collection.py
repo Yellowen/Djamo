@@ -123,7 +123,7 @@ class Collection (MongoCollection, object):
 
         return data
 
-    def _prepare_query(self, query_item):
+    def _prepare_query(self, query_item, query_type="query"):
 
         key, value = query_item
 
@@ -135,9 +135,12 @@ class Collection (MongoCollection, object):
             #    and we don't want to mess with that
 
             # Get the mongo operator handler
-            query_handler = getattr(self.Operators, "%s_query" % key[1:],
+            query_handler = getattr(self.Operators, "%s_%s" % (key[1:],
+                                                               query_type),
                                     self.__query__)
-            return query_handler(key, value)
+
+            document = self._get_document()
+            return query_handler(key, value, document)
 
         else:
             if isinstance(value, dict):
@@ -155,7 +158,7 @@ class Collection (MongoCollection, object):
             return document.serialize_item((key.split(".")[0], value),
                                            key.split("."))
 
-    def prepare_query(self, query):
+    def prepare_query(self, query, query_type="query"):
         """
         Prepare query (spec).
         """
@@ -164,7 +167,9 @@ class Collection (MongoCollection, object):
             # Serialize each item in query by serialize_item classmethod
             # of document.
             result = {}
-            result_list = map(self._prepare_query, query.items())
+            result_list = map(lambda x: self._prepare_query(x, query_type),
+                              query.items())
+
             map(lambda x: result.update(x), result_list)
             return result
 
@@ -311,8 +316,9 @@ class Collection (MongoCollection, object):
                       awaits the next group commit before returning.
 
         """
-        spec = self._prepare_query(spec)
-        doc = self._prepare_query(doc)
+        spec = self.prepare_query(spec)
+        doc = self.prepare_query(doc, "update")
+
         return super(Collection, self).update(spec, doc, *args, **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
@@ -458,7 +464,7 @@ class Collection (MongoCollection, object):
         document = self._get_document()
 
         if spec:
-            spec = self._prepare_query(spec)
+            spec = self.prepare_query(spec)
 
         result = super(Collection, self).find(spec, fields, as_class=document,
                                               *args, **kwargs)
@@ -478,24 +484,29 @@ class Collection (MongoCollection, object):
         """
         return self.find(spec_or_id, limit=-1, *args, **kwargs)
 
-    def __query__(self, key, value):
+    def __query__(self, key, value, document):
 
         # TODO: can a operator have a dictionary value with another
         #       operator as its key?
         if isinstance(value, dict):
             # If the operator value was a dictionary
-            return map(self._prepare_query, {key: value})
+            result = {}
+            result_list = map(self._prepare_query,  value.items())
+            map(lambda x: result.update(x), result_list)
+
+            return {key: result}
 
         elif isinstance(value, (tuple, list)):
             # If the operator value was a list or tuple
 
             # TODO: Does operators get this complex ?
             def wrap(x):
+
                 if isinstance(x, dict):
-                    return map(self._prepare_query, {key: value})
+                    return {key: map(self._prepare_query, value.items())}
+
                 else:
                     # If the list element was not a dict
-                    document = self._get_document()
                     return document.serialize_item((key, x)).values()[0]
 
             return {key: map(wrap, value)}
