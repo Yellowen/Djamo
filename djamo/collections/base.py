@@ -16,18 +16,12 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
-"""
-**Documents** by themselves does not have ability to save to database. To do
-that you should use a ``collection`` object. Its easy to use collections
-by subclassing the ``Collection`` base class.
-"""
-
 from pymongo.collection import Collection as MongoCollection
 
 from djamo.document import Document
 
 
-class Collection (MongoCollection, object):
+class BaseCollection (MongoCollection, object):
     """
     Djamo implementation of Mongodb collection.
     """
@@ -55,7 +49,7 @@ class Collection (MongoCollection, object):
         # Get the database instance from client
         self.db = client.get_database()
 
-        super(Collection, self).__init__(self.db, self.name, create,
+        super(BaseCollection, self).__init__(self.db, self.name, create,
                                          *args, **kwargs)
 
         if self.indexes:
@@ -223,7 +217,7 @@ class Collection (MongoCollection, object):
 
         """
         data = self._prepare_data(doc_or_docs)
-        return super(Collection, self).insert(data, *args, **kwargs)
+        return super(BaseCollection, self).insert(data, *args, **kwargs)
 
     def save(self, doc_to_docs, *args, **kwargs):
         """
@@ -264,7 +258,7 @@ class Collection (MongoCollection, object):
 
         """
         data = self._prepare_data(doc_or_docs)
-        return super(Collection, self).save(data, *args, **kwargs)
+        return super(BaseCollection, self).save(data, *args, **kwargs)
 
 
     def update(self, spec, doc, *args, **kwargs):
@@ -319,7 +313,7 @@ class Collection (MongoCollection, object):
         spec = self.prepare_query(spec)
         doc = self.prepare_query(doc, "update")
 
-        return super(Collection, self).update(spec, doc, *args, **kwargs)
+        return super(BaseCollection, self).update(spec, doc, *args, **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
         """
@@ -365,7 +359,7 @@ class Collection (MongoCollection, object):
                       before returning. When used with j the server awaits the
                       next group commit before returning.
         """
-        super(Collection, self).remove(spec_or_id, *args, **kwargs)
+        super(BaseCollection, self).remove(spec_or_id, *args, **kwargs)
 
     def find(self, spec=None, fields=None, *args, **kwargs):
         """
@@ -374,9 +368,9 @@ class Collection (MongoCollection, object):
         The spec argument is a prototype document that all results
         must match. For example:
 
-            from .models import UserCollection
+            from .models import UserBaseCollection
 
-            collection = UserCollection()
+            collection = UserBaseCollection()
             collection.find({"username": "Okarin"})
 
         only matches documents that have a key "username" with value "Okarin".
@@ -466,7 +460,7 @@ class Collection (MongoCollection, object):
         if spec:
             spec = self.prepare_query(spec)
 
-        result = super(Collection, self).find(spec, fields, as_class=document,
+        result = super(BaseCollection, self).find(spec, fields, as_class=document,
                                               *args, **kwargs)
 
         return result

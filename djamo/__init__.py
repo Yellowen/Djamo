@@ -1,2 +1,2 @@
-from .collection import Collection
+from .collections import Collection
 from .document import Document
