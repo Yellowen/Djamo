@@ -98,11 +98,9 @@ class BaseCollection (MongoCollection, object):
             else:
                 return document
 
-        document = self._get_document()
-
         docs = doc_or_docs
 
-        if isinstance(docs, list) or isinstance(docs, tuple):
+        if isinstance(docs, (list, tuple)):
             # If docs were a list or tuple of documents, validate each one
             # and get a document instance with their data for each document
             docs = map(self.validate_document, docs)
@@ -219,7 +217,7 @@ class BaseCollection (MongoCollection, object):
         data = self._prepare_data(doc_or_docs)
         return super(BaseCollection, self).insert(data, *args, **kwargs)
 
-    def save(self, doc_to_docs, *args, **kwargs):
+    def save(self, doc_or_docs, *args, **kwargs):
         """
         save a document(s) into current collection. and return the ``_id``
         value (or list of ``_id`` values) of doc_or_docs or [None] if
@@ -231,7 +229,7 @@ class BaseCollection (MongoCollection, object):
         :param manipulate: (optional): If True manipulate the documents before
                            inserting.
 
-        :param check_keys: (optional): If True check if keys start with ``$`` or
+        :param check_keys: (optional):If True check if keys start with ``$`` or
                            contain ``.``, raising InvalidName in either case.
 
         :param w: (optional) (integer or string) If this is a replica set,
@@ -260,7 +258,6 @@ class BaseCollection (MongoCollection, object):
         data = self._prepare_data(doc_or_docs)
         return super(BaseCollection, self).save(data, *args, **kwargs)
 
-
     def update(self, spec, doc, *args, **kwargs):
         """
         Update a document(s) in this collection.
@@ -277,7 +274,7 @@ class BaseCollection (MongoCollection, object):
         :param manipulate: (optional): If True manipulate the documents before
                            inserting.
 
-        :param check_keys: (optional): If True check if keys start with ``$`` or
+        :param check_keys: (optional):If True check if keys start with ``$`` or
                            contain ``.``, raising InvalidName in either case.
 
         :param multi: (optional): update all documents that match spec,
