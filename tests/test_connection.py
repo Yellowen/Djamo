@@ -1,5 +1,3 @@
-import sys
-print(sys.path)
 from djamo.base import Client
 
 

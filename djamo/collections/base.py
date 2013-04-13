@@ -41,13 +41,16 @@ class BaseCollection (MongoCollection, object):
     #: options as its second.
     indexes = []
 
-    def __init__(self, create=False, *args, **kwargs):
-        from djamo.db import client
-
+    def __init__(self, create=False, client=None, *args, **kwargs):
+        if not client:
+            from djamo.db import client
+            self._client = client
+        else:
+            self._client = client
         self.name = self.name or self.__class__.__name__.lower()
 
         # Get the database instance from client
-        self.db = client.get_database()
+        self.db = self._client.get_database()
 
         super(BaseCollection, self).__init__(self.db, self.name, create,
                                          *args, **kwargs)
