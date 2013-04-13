@@ -16,10 +16,12 @@ class Students(Collection):
 class TestCollectionInsert:
 
     def test_single_insert(self):
+        client = Client(config={"name": "djamo_test"})
+        c = Students(client=client)
+
         start = time.time()
         a = Student({"name": "Monkey .D Luffy"})
         a.age = 21
-        c = Students(client=Client(config={"name": "djamo_test"}))
         c.insert(a)
         stop = time.time()
         print("\nINSERT: %f" % (stop - start))

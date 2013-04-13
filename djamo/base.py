@@ -73,6 +73,7 @@ class Client(object):
 
         # Get the Database from connection object
         self._db = getattr(self._connection, db_name)
+        self.db_name = db_name
 
         # TODO: Implement database authentication
 
@@ -93,6 +94,9 @@ class Client(object):
 
     def get_database(self):
         return self._db
+
+    def drop_database(self):
+        self._connection.drop_database(self.db_name)
 
     def terminate_connection(self, *args, **kwargs):
         self._connection.disconnect()
