@@ -37,15 +37,19 @@ class TestCollection:
         client = Client(config={"name": "djamo_test"})
         c = Students(client=client)
 
-        start = time.time()
         l = list()
         append = l.append
-        for i in xrange(200000):
+
+        def wrap(i):
             a = Student({"name": "Monkey .D Luffy%s" % i,
                          "ttl": i/2000})
             a.age = i
             append(a)
 
+        map(wrap, xrange(200000))
+
+        print("Starting insert")
+        start = time.time()
         c.insert(l)
         stop = time.time()
         print("MASS INSERT: %f" % (stop - start))

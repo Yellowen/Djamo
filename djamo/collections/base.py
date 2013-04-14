@@ -106,7 +106,7 @@ class BaseCollection (MongoCollection, object):
         if isinstance(docs, (list, tuple)):
             # If docs were a list or tuple of documents, validate each one
             # and get a document instance with their data for each document
-            docs = map(self.validate_document, docs)
+            docs = [self.validate_document(i) for i in docs]
 
         elif isinstance(docs, dict):
             docs = [self.validate_document(docs)]
@@ -114,7 +114,7 @@ class BaseCollection (MongoCollection, object):
         else:
             raise TypeError("'doc_or_docs' should be dict or a list of dict like object")
 
-        data = map(to_data, docs)
+        data = [to_data(i) for i in docs]
 
         return data
 
@@ -140,7 +140,7 @@ class BaseCollection (MongoCollection, object):
         else:
             if isinstance(value, dict):
                 # If current value was a dictionary
-                if any(map(lambda x: x.startswith("$"), value.keys())):
+                if any([i.startswith("$") for i in value.keys()]):
                     # If one of the current value (which is a dictionary) was
                     # a mongo query command and starts with $ then prepare
                     # each key/value of it again
@@ -162,10 +162,10 @@ class BaseCollection (MongoCollection, object):
             # Serialize each item in query by serialize_item classmethod
             # of document.
             result = {}
-            result_list = map(lambda x: self._prepare_query(x, query_type),
-                              query.items())
+            result_list = [self._prepare_query(i, query_type) for i in \
+                           query.iteritems()]
 
-            map(lambda x: result.update(x), result_list)
+            [result.update(i) for i in  result_list]
             return result
 
         return None
@@ -489,8 +489,8 @@ class BaseCollection (MongoCollection, object):
         if isinstance(value, dict):
             # If the operator value was a dictionary
             result = {}
-            result_list = map(self._prepare_query,  value.items())
-            map(lambda x: result.update(x), result_list)
+            result_list = [self._prepare_query(i) for i in  value.iteritems()]
+            [result.update(i) for i in result_list]
 
             return {key: result}
 
@@ -501,13 +501,13 @@ class BaseCollection (MongoCollection, object):
             def wrap(x):
 
                 if isinstance(x, dict):
-                    return {key: map(self._prepare_query, value.items())}
+                    return {key: [self._prepare_query(i) for i in value.iteritems()]}
 
                 else:
                     # If the list element was not a dict
                     return document.serialize_item((key, x)).values()[0]
 
-            return {key: map(wrap, value)}
+            return {key: [wrap(i) for i in  value]}
 
         else:
             return {key: value}
