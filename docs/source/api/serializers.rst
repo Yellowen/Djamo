@@ -26,6 +26,12 @@ Numeric Serializers
    :members:
    :private-members:
 
+Iterable Serializers
+--------------------
+.. autoclass:: djamo.serializers.List
+   :members:
+   :private-members:
+
 Django User Serializer
 ----------------------
 .. autoclass:: djamo.serializers.DjangoUser
