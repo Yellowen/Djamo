@@ -17,7 +17,7 @@ Welcome to Djamo's documentation!
    :doc:`quickstart`
 	Learn Djamo basics quickly
 
-   :doc:`api`
+   :doc:`api/index`
 	Djamo internal API for developers
 
    :doc:`faq`
