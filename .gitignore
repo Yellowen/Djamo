@@ -39,3 +39,4 @@ docs/build
 env/
 MANIFEST
 __pycache__/*
+results/*
