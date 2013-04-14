@@ -18,7 +18,7 @@ This collection class is the base of other **Djamo** collections and contains th
 
 Collection class
 ----------------
-This class is contains all the methods that are wrappers to  **PyMongo**s interface or PyMongo did not provided.
+This class is contains all the methods that are wrappers to  **PyMongo** interface or PyMongo did not provided.
 
 .. autoclass:: djamo.collections.Collection
    :members:
