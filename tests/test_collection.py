@@ -81,7 +81,7 @@ class TestCollection:
         print("UPDATE: %f" % (stop - start))
 
     def test_update_all(self):
-        print("Update all--------------")
+        print("Update all --------------")
         c = self.fixture()
 
         start = time.time()
@@ -90,3 +90,32 @@ class TestCollection:
         d = c.find({"name": "sameer"}).count()
         print("updated %s" % d)
         print("UPDATE ALL: %f" % (stop - start))
+
+    def test_remove(self):
+        print("Remove --------------")
+        c = self.fixture()
+
+        start = time.time()
+        c.remove({"ttl": 3})
+        stop = time.time()
+        d = c.find({"ttl": 3}).count()
+        print("find %s" % d)
+        print("Remove: %f" % (stop - start))
+
+    def test_save(self):
+        print("Save --------------")
+        c = self.fixture()
+
+        a = Student({"name": "narto", "age": 20})
+
+        start1 = time.time()
+        c.save(a)
+        stop1 = time.time()
+
+        a.name = "itachi"
+        start2 = time.time()
+        c.save(a)
+        stop2 = time.time()
+
+        print("Save: %f" % (stop1 - start1))
+        print("Second Save: %f" % (stop2 - start2))

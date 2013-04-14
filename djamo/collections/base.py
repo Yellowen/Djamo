@@ -220,14 +220,14 @@ class BaseCollection (MongoCollection, object):
         data = self._prepare_data(doc_or_docs)
         return super(BaseCollection, self).insert(data, *args, **kwargs)
 
-    def save(self, doc_or_docs, *args, **kwargs):
+    def save(self, to_save, *args, **kwargs):
         """
         save a document(s) into current collection. and return the ``_id``
         value (or list of ``_id`` values) of doc_or_docs or [None] if
         manipulate is False and the documents passed as doc_or_docs do not
         include an ``_id`` field.
 
-        :param doc_or_docs: a document or list of documents to be inserted.
+        :param to_save: A document to be insert or update.
 
         :param manipulate: (optional): If True manipulate the documents before
                            inserting.
@@ -258,8 +258,11 @@ class BaseCollection (MongoCollection, object):
                       awaits the next group commit before returning.
 
         """
-        data = self._prepare_data(doc_or_docs)
-        return super(BaseCollection, self).save(data, *args, **kwargs)
+        document = self._get_document()
+        if isinstance(to_save, document):
+            to_save = to_save.serialize()
+
+        return super(BaseCollection, self).save(to_save, *args, **kwargs)
 
     def update(self, spec, doc, *args, **kwargs):
         """
@@ -316,7 +319,7 @@ class BaseCollection (MongoCollection, object):
         return super(BaseCollection, self).update(spec, doc, *args,
                                                   **kwargs)
 
-    def remove(self, spec_or_id=None, **kwargs):
+    def remove(self, spec_or_id=None, *args, **kwargs):
         """
         Remove a document(s) from this collection. returns A document (dict)
         describing the effect of the remove or None if write acknowledgement
