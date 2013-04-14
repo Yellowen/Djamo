@@ -56,8 +56,17 @@ class BaseCollection (MongoCollection, object):
                                          *args, **kwargs)
 
         if self.indexes:
-            map(lambda x: self.ensure_index(x[0], **x[1]),
-                self.indexes)
+            # Create indexes
+            from djamo import Index
+
+            def wrap(index):
+                if isinstance(index, Index):
+                    return index.ensure(self)
+
+                raise TypeError("'indexes' should be a list of 'Index' \
+                instances.")
+
+            [wrap(i) for i in self.indexes]
 
     def _get_document(self):
         if self.document is not None:

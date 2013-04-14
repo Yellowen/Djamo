@@ -2,7 +2,7 @@ import time
 import sys
 
 from djamo.base import Client
-from djamo import Collection, Document
+from djamo import Collection, Document, Index
 
 
 class Student(Document):
@@ -11,6 +11,13 @@ class Student(Document):
 
 class Students(Collection):
     document = Student
+
+
+class IStudents(Collection):
+    document = Student
+    indexes = [
+        Index("age"),
+    ]
 
 
 class TestCollection:
@@ -43,7 +50,7 @@ class TestCollection:
         def wrap(i):
             a = Student({"name": "Monkey .D Luffy%s" % i,
                          "ttl": i/2000})
-            a.age = i
+            a.age = a.ttl * 4
             append(a)
 
         map(wrap, xrange(200000))
@@ -59,7 +66,7 @@ class TestCollection:
         c = self.fixture()
 
         start = time.time()
-        c.find({"ttl": 4})
+        c.find({"age": 12})
         stop = time.time()
         print("FIND: %f" % (stop - start))
 
@@ -123,3 +130,31 @@ class TestCollection:
 
         print("Save: %f" % (stop1 - start1))
         print("Second Save: %f" % (stop2 - start2))
+
+    def test_indexing(self):
+        print("Indexing --------------")
+        client = Client(config={"name": "djamo_test"})
+        c = IStudents(client=client)
+
+        l = list()
+        append = l.append
+
+        def wrap(i):
+            a = Student({"name": "Madara %s" % i,
+                         "ttl": i/2000})
+            a.age = a.ttl * 4
+            append(a)
+
+        map(wrap, xrange(200000))
+
+        print("Starting insert")
+        start = time.time()
+        c.insert(l)
+        stop = time.time()
+        print("MASS INSERT WITH INDEX: %f" % (stop - start))
+
+        start = time.time()
+        d = c.find({"age": 12}).count()
+        stop = time.time()
+        print("%s found" % d)
+        print("FIND WITH INDEX: %f" % (stop - start))
