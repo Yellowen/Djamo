@@ -41,6 +41,16 @@ class DjangoUser(Serializer):
 
         super(DjangoUser, self).__init__(*args, **kwargs)
 
+    def validate(self, key, value):
+        """
+        Check for a valid Django user in given value
+        """
+        super(DjangoUser, self).validate(value)
+
+        if not isinstance(value, self._user_model):
+            raise self.ValidationError("value of '%s' is not a Django \
+            user." % key)
+
     def serialize(self, value):
         """
         Convert the Django User instance to an string.

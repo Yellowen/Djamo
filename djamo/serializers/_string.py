@@ -16,13 +16,12 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
+from .base import Serializer
 
 
-class Serializer(object):
+class String(Serializer):
     """
-    Base class for all the serializer classes. A serializer is a class that
-    is responsible for serializing/de-serializing a value for an specific
-    field of a document that specified by user in document class.
+    Serializer for string data.
 
     :param required: If ``True`` the field is required and should have a value
                      in transaction time. default ``False``
@@ -30,37 +29,29 @@ class Serializer(object):
     :param default: Default value of the field.
     """
 
-    def __init__(self, required=False, default=None):
-        self._required = required
-        self._default = default
+    def __init__(self, min_length=None, max_length=None, *args, **kwargs):
+        self._min = min_length or 0;
+        self._max = max_length
+
+        super(String, self).__init__(*args, **kwargs)
 
     def validate(self, key, value):
         """
-        Validate the ``value`` parameter against current serializer policy
-        and riase :py:exception: `~djamo.serializers.Serializer.ValidationError`
-        if value was not valid.
+        Check for a valid string in given value
         """
-        if self._required and not value:
-            raise self.ValidationError("'%s' field is required" % key)
+        super(String, self).validate(value)
 
-    def serialize(self, value):
-        """
-        Serialize the given value.
-        """
-        return value
+        if not isinstance(value, basestring):
+            raise self.ValidationError("value of '%s' is not an string." % key)
 
-    def deserialize(self, value):
-        """
-        De-serialize the given value
-        """
-        return value
+        if len(value) < self._min:
+            raise self.ValidationError("Length of '%s's value should be more \
+            that %s character" % (key, self._min))
 
-    @property
-    def default_value(self):
-        """
-        The default value specified by user.
-        """
-        return self._default
+        if self._max:
+            if len(value) > self._max:
+                raise self.ValidationError("Length of '%s's value should be \
+                less that %s character" % (key, self._max))
 
     def is_valid_value(self, value):
         """
@@ -69,17 +60,7 @@ class Serializer(object):
         just check value to possiblity of a valid value. But ``validate``
         check other parameter too like field requirement.
         """
-        raise self.NotImplemented()
+        if isinstance(value, basestring):
+            return True
 
-    class ValidationError(Exception):
-        """
-        This exception will raise in case of any validation problem.
-        """
-        pass
-
-    class NotImplemented(Exception):
-        """
-        This exception will raise if any necessary methods does not
-        override in subclasses.
-        """
-        pass
+        return False

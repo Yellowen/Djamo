@@ -182,7 +182,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
         """
         # Call each validator
         if key in self._fields:
-            self._fields[key].validate((self[key]))
+            self._fields[key].validate(key, (self[key]))
 
         # Call current document validate_<key>
         validator = getattr(self, "validate_%s" % key, None)
@@ -193,7 +193,13 @@ class Document(with_metaclass(DocumentMeta, dict)):
     def validate(self):
         """
         Validate the current document against provided validators of serializer
-        and current document validate_<key> method for each ``key``.
+        and current document validate_<field> method for each ``field``. The
+        signature of each document level validator for a field should be like::
+
+            def validate_<field>(self, value):
+                # Validation code goes here ....
+
+        Remember to replace <field> with your field name.
         """
 
         map(self._validate_value, self)
