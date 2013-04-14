@@ -20,7 +20,7 @@
 class Index(object):
     """
     This class represent a Mongodb collection Index. You must using it via
-    :py:var: `~djamo.collection.BaseCollection.indexes` for example::
+    :py:attribute: `~djamo.collection.BaseCollection.indexes` for example::
 
         class Students(Collection):
 

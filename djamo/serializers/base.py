@@ -20,7 +20,14 @@
 
 class Serializer(object):
     """
-    Base class for all the serializer classes.
+    Base class for all the serializer classes. A serializer is a class that
+    is responsible for serializing/de-serializing a value for an specific
+    field of a document that specified by user in document class.
+
+    :param required: If ``True`` the field is required and should have a value
+                     in transaction time. default ``False``
+
+    :param default: Default value of the field.
     """
 
     def __init__(self, required=False, default=None):
@@ -28,22 +35,42 @@ class Serializer(object):
         self._default = default
 
     def validate(self, value):
+        """
+        Validate the ``value`` parameter against current serializer policy
+        and riase :py:exception: `~djamo.serializers.Serializer.ValidationError`
+        if value was not valid.
+        """
         if self._required and not value:
 
             # TODO: Use a 'key' in the exception.
             raise self.ValidationError("This field is required")
 
     def serialize(self, value):
+        """
+        Serialize the given value.
+        """
         return value
 
     def deserialize(self, value):
+        """
+        De-serialize the given value
+        """
         return value
 
     @property
     def default_value(self):
+        """
+        The default value specified by user.
+        """
         return self._default
 
     def is_valid_value(self, value):
+        """
+        Check the value against current serializer policy. The difference
+        between this method and ``validate`` method is that this method
+        just check value to possiblity of a valid value. But ``validate``
+        check other parameter too like field requirement.
+        """
         raise self.NotImplemented()
 
     class ValidationError(Exception):

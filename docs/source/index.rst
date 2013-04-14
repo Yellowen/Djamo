@@ -10,16 +10,21 @@ Welcome to Djamo's documentation!
 
 **Djamo** is another wrapper (ORM like) package for `PyMmongo <http://api.mongodb.org/python/current/>`_ and `MongDB <http://www.mongodb.org/>`_. This documentation attempts to explain everything you need to know to use PyMongo
 
-Contents:
 
-.. toctree::
-   :maxdepth: 2
-   :titlesonly:
+   :doc:`installation`
+	How to install **Djamo**
 
-   Installation <installation.rst>
-   Quick start <quickstart.rst>
-   FAQ - Frequently asked questions <faq.rst>
-   API Reference <api.rst>
+   :doc:`quickstart`
+	Learn Djamo basics quickly
+
+   :doc:`api`
+	Djamo internal API for developers
+
+   :doc:`faq`
+	Frequently asked questions
+
+   :doc:`otherresources`
+	Find more resources to learn about **MongoDB**, **PyMong** and **Djamo**
 
 
 Report Bugs
@@ -31,8 +36,8 @@ Contribute
 ----------
 Contributions can be as simple as minor tweaks to this documentation. To contribute, fork the project on `github <https://github.com/Yellowen/Djamo>`_  and send a pull request.
 
-
-==================
+Indices and tables
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

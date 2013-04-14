@@ -42,6 +42,14 @@ class BaseCollection (MongoCollection, object):
     indexes = []
 
     def __init__(self, create=False, client=None, *args, **kwargs):
+        """
+        Initilize the collection instance.
+
+        :param create: (optional): If `True`, force collection creation even
+                                   without options being set
+        :param client: (optional): If client provided, **Djamo** will use it,
+                                   instead of its own (mostly for debugging)
+        """
         if not client:
             from djamo.db import client
             self._client = client
@@ -69,6 +77,10 @@ class BaseCollection (MongoCollection, object):
             [wrap(i) for i in self.indexes]
 
     def _get_document(self):
+        """
+        Check the collection's document and return it if it was a valid
+        document
+        """
         if self.document is not None:
             if issubclass(self.document, Document):
                 return self.document
@@ -128,7 +140,9 @@ class BaseCollection (MongoCollection, object):
         return data
 
     def _prepare_query(self, query_item, query_type="query"):
-
+        """
+        Prepare each query_item (key, value) for the specific query type.
+        """
         key, value = query_item
 
         # If key was a mongo operator
@@ -492,7 +506,9 @@ class BaseCollection (MongoCollection, object):
         return self.find(spec_or_id, limit=-1, *args, **kwargs)
 
     def __query__(self, key, value, document):
-
+        """
+        Default operator handler.
+        """
         # TODO: can a operator have a dictionary value with another
         #       operator as its key?
         if isinstance(value, dict):
@@ -522,6 +538,10 @@ class BaseCollection (MongoCollection, object):
             return {key: value}
 
     class Operators:
+        """
+        This class contains all the handlers of query specific operator of
+        MongoDB.
+        """
 
         # TODO: deal with push, addtoset, each, slice and sort update
         # operators
