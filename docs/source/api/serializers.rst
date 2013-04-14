@@ -6,9 +6,23 @@ You can use serializers to use validation and serialization on an specific field
    :members:
    :private-members:
 
-String Serializer
------------------
+String Serializers
+------------------
 .. autoclass:: djamo.serializers.String
+   :members:
+   :private-members:
+
+Numeric Serializers
+-------------------
+.. autoclass:: djamo.serializers.Integer
+   :members:
+   :private-members:
+
+.. autoclass:: djamo.serializers.Long
+   :members:
+   :private-members:
+
+.. autoclass:: djamo.serializers.Float
    :members:
    :private-members:
 

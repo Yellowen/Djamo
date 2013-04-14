@@ -23,14 +23,13 @@ class String(Serializer):
     """
     Serializer for string data.
 
-    :param required: If ``True`` the field is required and should have a value
-                     in transaction time. default ``False``
+    :param min_length: This parameter specify the minimum length of the string.
 
-    :param default: Default value of the field.
+    :param max_length: This parameter specify the maximum length of the string.
     """
 
     def __init__(self, min_length=None, max_length=None, *args, **kwargs):
-        self._min = min_length or 0;
+        self._min = min_length or 0
         self._max = max_length
 
         super(String, self).__init__(*args, **kwargs)
@@ -39,7 +38,7 @@ class String(Serializer):
         """
         Check for a valid string in given value
         """
-        super(String, self).validate(value)
+        super(String, self).validate(key, value)
 
         if not isinstance(value, basestring):
             raise self.ValidationError("value of '%s' is not an string." % key)

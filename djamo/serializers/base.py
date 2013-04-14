@@ -16,7 +16,12 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
+"""
+All the serializers should be a subclass of the **Serializer** class.
 
+.. NOTE: Since all the serializers are subclasses of the Serializer class
+         all of them have the basic parameters of Serializer like ``required``
+"""
 
 class Serializer(object):
     """
