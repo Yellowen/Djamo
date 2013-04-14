@@ -55,7 +55,7 @@ class TestCollection:
         c = self.fixture()
 
         start = time.time()
-        c.find({"name": "Monkey .D Luffy%s" % 960000})
+        c.find({"ttl": 4})
         stop = time.time()
         print("FIND: %f" % (stop - start))
 
@@ -79,3 +79,14 @@ class TestCollection:
         d = c.find({"name": "sameer"}).count()
         print("updated %s" % d)
         print("UPDATE: %f" % (stop - start))
+
+    def test_update_all(self):
+        print("Update all--------------")
+        c = self.fixture()
+
+        start = time.time()
+        c.update_all({"ttl": 3}, {"$set": {"name": "sameer"}})
+        stop = time.time()
+        d = c.find({"name": "sameer"}).count()
+        print("updated %s" % d)
+        print("UPDATE ALL: %f" % (stop - start))

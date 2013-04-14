@@ -268,7 +268,7 @@ class BaseCollection (MongoCollection, object):
         :param spec: A dict or SON instance specifying elements which must
                      be present for a document to be updated
 
-        :param doc: a dict or SON instance specifying the document to be used
+        :param doc: A dict or SON instance specifying the document to be used
                     for the update or (in the case of an upsert) insert - see
                     docs on MongoDB update modifiers
 
@@ -313,7 +313,8 @@ class BaseCollection (MongoCollection, object):
         spec = self.prepare_query(spec)
         doc = self.prepare_query(doc, "update")
 
-        return super(BaseCollection, self).update(spec, doc, *args, **kwargs)
+        return super(BaseCollection, self).update(spec, doc, *args,
+                                                  **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
         """

@@ -21,4 +21,18 @@ from .base import BaseCollection
 
 
 class Collection (BaseCollection):
-    pass
+
+    def update_all(self, spec, doc, *args, **kwargs):
+        """
+        Update all the documents which matched to spec.
+
+        :param spec: A dict or SON instance specifying elements which must
+                     be present for a document to be updated
+
+        :param doc: A dict or SON instance specifying the document to be used
+                    for the update or (in the case of an upsert) insert - see
+                    docs on MongoDB update modifiers
+        """
+        kwargs["multi"] = True
+
+        return self.update(spec, doc, *args, **kwargs)
