@@ -30,7 +30,7 @@ Welcome to Djamo's documentation!
 Report Bugs
 -----------
 You can report bugs and request features in our issue tracker in `github <https://github.com/Yellowen/Djamo/issues>`_.
-Indices and tables
+If you find any mistakes in this document please report them too.
 
 Contribute
 ----------
