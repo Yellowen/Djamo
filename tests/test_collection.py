@@ -39,21 +39,18 @@ class TestCollection:
         stop = time.time()
         print("INSERT: %f" % (stop - start))
 
-    def test_mass__insert(self):
+    def test_mass_insert(self):
         print("Massive insert------------------------")
         client = Client(config={"name": "djamo_test"})
         c = Students(client=client)
-
-        l = list()
-        append = l.append
 
         def wrap(i):
             a = Student({"name": "Monkey .D Luffy%s" % i,
                          "ttl": i/2000})
             a.age = a.ttl * 4
-            append(a)
+            return a
 
-        map(wrap, xrange(200000))
+        l = [wrap(i) for i in range(200000)]
 
         print("Starting insert")
         start = time.time()
@@ -136,18 +133,14 @@ class TestCollection:
         client = Client(config={"name": "djamo_test"})
         c = IStudents(client=client)
 
-        l = list()
-        append = l.append
-
         def wrap(i):
             a = Student({"name": "Madara %s" % i,
                          "ttl": i/2000})
             a.age = a.ttl * 4
-            append(a)
+            return a
+        l = [wrap(i) for i in range(200000)]
 
-        map(wrap, xrange(200000))
-
-        print("Starting insert")
+        print("Starting insert %s " % len(l))
         start = time.time()
         c.insert(l)
         stop = time.time()

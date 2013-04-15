@@ -186,7 +186,7 @@ class BaseCollection (MongoCollection, object):
             # of document.
             result = {}
             result_list = [self._prepare_query(i, query_type) for i in \
-                           query.iteritems()]
+                           query.items()]
 
             [result.update(i) for i in  result_list]
             return result
@@ -514,7 +514,7 @@ class BaseCollection (MongoCollection, object):
         if isinstance(value, dict):
             # If the operator value was a dictionary
             result = {}
-            result_list = [self._prepare_query(i) for i in  value.iteritems()]
+            result_list = [self._prepare_query(i) for i in  value.items()]
             [result.update(i) for i in result_list]
 
             return {key: result}
@@ -526,7 +526,7 @@ class BaseCollection (MongoCollection, object):
             def wrap(x):
 
                 if isinstance(x, dict):
-                    return {key: [self._prepare_query(i) for i in value.iteritems()]}
+                    return {key: [self._prepare_query(i) for i in value.items()]}
 
                 else:
                     # If the list element was not a dict
