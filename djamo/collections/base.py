@@ -85,16 +85,17 @@ class BaseCollection (MongoCollection, object):
             if issubclass(self.document, Document):
                 return self.document
 
-            raise TypeError("document property should be a 'Document' subclass")
+            raise TypeError("document property should be a \
+            'Document' subclass")
         raise TypeError("document property should be not None value")
-
 
     def validate_document(self, doc):
         """
         Return a validated instance of the current collection document from
         provided doc parameter.
 
-        :param doc: An instance of the current collection document or a dictionary
+        :param doc: An instance of the current collection document or
+                    a dictionary
                     like object.
         """
         document = self._get_document()
@@ -103,12 +104,13 @@ class BaseCollection (MongoCollection, object):
             return doc
 
         elif isinstance(doc, dict):
-            # Create a new instance of the current collection's document with doc
-            # data
+            # Create a new instance of the current collection's document
+            # with doc data
             doc_obj = document(doc)
             return doc_obj
         else:
-            raise TypeError("'doc_or_docs' should be dict or a list of dict like object")
+            raise TypeError("'doc_or_docs' should be dict or a list of dict \
+            like object")
 
     def _prepare_data(self, doc_or_docs):
         """
@@ -133,7 +135,8 @@ class BaseCollection (MongoCollection, object):
             docs = [self.validate_document(docs)]
 
         else:
-            raise TypeError("'doc_or_docs' should be dict or a list of dict like object")
+            raise TypeError("'doc_or_docs' should be dict or a list of dict \
+            like object")
 
         data = [to_data(i) for i in docs]
 
@@ -185,10 +188,10 @@ class BaseCollection (MongoCollection, object):
             # Serialize each item in query by serialize_item classmethod
             # of document.
             result = {}
-            result_list = [self._prepare_query(i, query_type) for i in \
-                           query.items()]
+            result_list = [self._prepare_query(
+                i, query_type) for i in query.items()]
 
-            [result.update(i) for i in  result_list]
+            [result.update(i) for i in result_list]
             return result
 
         return None
@@ -205,8 +208,8 @@ class BaseCollection (MongoCollection, object):
         :param manipulate: (optional): If True manipulate the documents before
                            inserting.
 
-        :param check_keys: (optional): If True check if keys start with ``$`` or
-                           contain ``.``, raising InvalidName in either case.
+        :param check_keys: (optional): If True check if keys start with ``$``
+                           or contain ``.``, raising InvalidName in either case
 
         :param continue_on_error: (optional): If True, the database will not
                                   stop processing a bulk insert if one fails
@@ -351,7 +354,7 @@ class BaseCollection (MongoCollection, object):
         .. warning: Calls to remove() should be performed with care, as removed
                     data cannot be restored
 
-        If spec_or_id is None, all documents in this collection will be removed.
+        If spec_or_id is None, all documents in this collection will be removed
         This is not equivalent to calling drop_collection(), however, as
         indexes will not be removed.
 
@@ -369,8 +372,8 @@ class BaseCollection (MongoCollection, object):
                   to the specified number or tagged set of servers. w=<int>
                   always includes the replica set primary (e.g. w=3 means write
                   to the primary and wait until replicated to two secondaries).
-                  Passing w=0 disables write acknowledgement and all other write
-                  concern options.
+                  Passing w=0 disables write acknowledgement and all other
+                  write concern options.
 
         :param wtimeout: (optional) (integer) Used in conjunction with w.
                          Specify a value in milliseconds to control how long
@@ -425,9 +428,9 @@ class BaseCollection (MongoCollection, object):
                         the server. Care should be taken to ensure that cursors
                         with timeout turned off are properly closed.
 
-        :param snapshot: (optional) if True, snapshot mode will be used for this
+        :param snapshot: (optional) if True, snapshot mode will be used for
                          query. Snapshot mode assures no duplicates are
-                         returned, or objects missed, which were present at both
+                         returned or objects missed, which were present at both
                          the start and end of the query`s execution. For
                          details, see the snapshot documentation.
 
@@ -440,9 +443,10 @@ class BaseCollection (MongoCollection, object):
                          see the tailable cursor documentation.
 
         :param sort: (optional) a list of (key, direction) pairs specifying the
-                     sort order for this query. See sort() for details. max_scan
-                     (optional): limit the number of documents examined when
-                     performing the query.
+                     sort order for this query. See sort() for details.
+
+        :param max_scan: (optional): limit the number of documents examined
+                         when performing the query.
 
         :param as_class: (optional) class to use for documents in the query
                          result (default is document_class)
@@ -461,8 +465,8 @@ class BaseCollection (MongoCollection, object):
                            SON manipulators before returning.
 
         :param network_timeout: (optional) specify a timeout to use for this
-                                query, which will override the MongoClient-level
-                                default
+                                query, which will override the
+                                MongoClient-level default
 
         :param read_preference: (optional) The read preference for this query.
 
@@ -487,8 +491,9 @@ class BaseCollection (MongoCollection, object):
         if spec:
             spec = self.prepare_query(spec)
 
-        result = super(BaseCollection, self).find(spec, fields, as_class=document,
-                                              *args, **kwargs)
+        result = super(BaseCollection, self).find(spec, fields,
+                                                  as_class=document,
+                                                  *args, **kwargs)
 
         return result
 
@@ -514,7 +519,7 @@ class BaseCollection (MongoCollection, object):
         if isinstance(value, dict):
             # If the operator value was a dictionary
             result = {}
-            result_list = [self._prepare_query(i) for i in  value.items()]
+            result_list = [self._prepare_query(i) for i in value.items()]
             [result.update(i) for i in result_list]
 
             return {key: result}
@@ -526,13 +531,14 @@ class BaseCollection (MongoCollection, object):
             def wrap(x):
 
                 if isinstance(x, dict):
-                    return {key: [self._prepare_query(i) for i in value.items()]}
+                    return {key:
+                            [self._prepare_query(i) for i in value.items()]}
 
                 else:
                     # If the list element was not a dict
                     return document.serialize_item((key, x)).values()[0]
 
-            return {key: [wrap(i) for i in  value]}
+            return {key: [wrap(i) for i in value]}
 
         else:
             return {key: value}
@@ -551,7 +557,7 @@ class BaseCollection (MongoCollection, object):
             """
             return {"$pop": value}
 
-        def bit_update(self, value, document,  *args, **kwargs):
+        def bit_update(self, value, document, *args, **kwargs):
             """
             Handle the $bit operator for document update.
             """
@@ -559,7 +565,8 @@ class BaseCollection (MongoCollection, object):
                 for op, v in bit_op.items():
                     # serialize the v (value of the bit operator) and replace
                     # the old value
-                    bit_op[op] = document.serialize_item((field, v)).values()[1]
+                    bit_op[op] = document.serialize_item(
+                        (field, v), field.split(".")).values()[1]
 
             return {"$bit": value}
 
