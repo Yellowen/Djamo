@@ -51,7 +51,7 @@ class DjangoUser(Serializer):
             raise self.ValidationError("value of '%s' is not a Django \
             user." % key)
 
-    def serialize(self, value):
+    def serialize(self, value, **kwargs):
         """
         Convert the Django User instance to an string.
         """

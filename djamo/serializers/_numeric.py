@@ -36,8 +36,8 @@ class Integer(Serializer):
         self._min = min or -maxint - 1
         self._max = max or maxint
 
-        if self._min < (-maxint -1):
-            self._min = -maxint -1
+        if self._min < (-maxint - 1):
+            self._min = -maxint - 1
 
         if self._max < maxint:
             self._max = maxint
@@ -53,7 +53,7 @@ class Integer(Serializer):
         super(Integer, self).validate(key, value)
 
         if not isinstance(value, self._class):
-            raise self.ValidationError("value of '%s' is not an %s." % \
+            raise self.ValidationError("value of '%s' is not an %s." %
                                        (key, self._class.__class__.__name__))
 
         if self._min is not None:

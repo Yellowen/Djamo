@@ -289,7 +289,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
         return {item[0]: item[1]}
 
     @classmethod
-    def serialize_item(cls, item, args=[]):
+    def serialize_item(cls, item, args=None):
         """
         Serialize a query that stored in ``item`` tuple like: (key, value)
         """
@@ -297,6 +297,6 @@ class Document(with_metaclass(DocumentMeta, dict)):
         if fields and isinstance(fields, dict):
             if item[0] in fields:
                 # Serialize the value using serializer specified by user
-                return fields[item(0)].serialize(item[1])
+                return fields[item(0)].serialize(item[1], params=args)
 
         return {item[0]: item[1]}

@@ -23,6 +23,7 @@ All the serializers should be a subclass of the **Serializer** class.
          all of them have the basic parameters of Serializer like ``required``
 """
 
+
 class Serializer(object):
     """
     Base class for all the serializer classes. A serializer is a class that
@@ -42,13 +43,14 @@ class Serializer(object):
     def validate(self, key, value):
         """
         Validate the ``value`` parameter against current serializer policy
-        and riase :py:exception: `~djamo.serializers.Serializer.ValidationError`
+        and riase
+        :py:exception: `~djamo.serializers.Serializer.ValidationError`
         if value was not valid.
         """
         if self._required and not value:
             raise self.ValidationError("'%s' field is required" % key)
 
-    def serialize(self, value):
+    def serialize(self, value, **kwargs):
         """
         Serialize the given value.
         """

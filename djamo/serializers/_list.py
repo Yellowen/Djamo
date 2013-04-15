@@ -42,7 +42,7 @@ class List(Serializer):
             raise self.ValidationError("'%s's value should be a instance of \
             list or tuple." % key)
 
-    def serialize(self, value):
+    def serialize(self, value, **kwargs):
         """
         Serialize the given value.
         """
