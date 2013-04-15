@@ -17,8 +17,6 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
 
-from django.conf import settings
-
 from .base import Serializer
 
 
@@ -29,6 +27,8 @@ class DjangoUser(Serializer):
     """
 
     def __init__(self, user_field="pk", *args, **kwargs):
+        from django.conf import settings
+
         self.user_field = user_field
 
         if settings.AUTH_USER_MODEL != "auth.User":

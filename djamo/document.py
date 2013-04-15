@@ -189,7 +189,6 @@ class Document(with_metaclass(DocumentMeta, dict)):
         if validator:
             validator(self[key])
 
-
     def validate(self):
         """
         Validate the current document against provided validators of serializer
@@ -201,8 +200,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
 
         Remember to replace <field> with your field name.
         """
-
-        map(self._validate_value, self)
+        [self._validate_value(i) for i in self.keys()]
 
     def _serialize_key(self, key):
         """

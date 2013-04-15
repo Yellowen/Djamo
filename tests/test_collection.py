@@ -3,6 +3,7 @@ import sys
 
 from djamo.base import Client
 from djamo import Collection, Document, Index
+from djamo.serializers import *
 
 
 class Student(Document):

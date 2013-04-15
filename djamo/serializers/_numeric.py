@@ -17,6 +17,8 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
 
+from djamo.utils import six
+
 from .base import Serializer
 
 
@@ -30,19 +32,23 @@ class Integer(Serializer):
 
     """
 
-    def __init__(self, min=None, max=None, *args, **kwargs):
-        from sys import maxint
+    def __init__(self, min=None, max=None, klass=int, *args, **kwargs):
+        try:
+            from sys import maxint
+            MAXSIZE = maxint
+        except ImportError:
+            MAXSIZE = six.MAXSIZE
 
-        self._min = min or -maxint - 1
-        self._max = max or maxint
+        self._min = min or -MAXSIZE - 1
+        self._max = max or MAXSIZE
 
-        if self._min < (-maxint - 1):
-            self._min = -maxint - 1
+        if self._min < (-MAXSIZE - 1):
+            self._min = -MAXSIZE - 1
 
-        if self._max < maxint:
-            self._max = maxint
+        if self._max < MAXSIZE:
+            self._max = MAXSIZE
 
-        self._class = int
+        self._class = klass
 
         super(Integer, self).__init__(*args, **kwargs)
 
@@ -79,25 +85,6 @@ class Integer(Serializer):
         return False
 
 
-class Long(Integer):
-    """
-    Serializer for Long data.
-
-    :param min: This parameter specify the minimum value of the long data.
-
-    :param max: This parameter specify the maximum value of the long data.
-
-    """
-
-    def __init__(self, min=None, max=None, *args, **kwargs):
-        self._min = min
-        self._max = max
-
-        self._class = long
-
-        super(Long, self).__init__(*args, **kwargs)
-
-
 class Float(Integer):
     """
     Serializer for Long data.
@@ -110,8 +97,8 @@ class Float(Integer):
     def __init__(self, min=None, max=None, *args, **kwargs):
         from sys import float_info
 
-        self.min = min or float_info.min
-        self.max = max or float_info.max
+        self._min = min or float_info.min
+        self._max = max or float_info.max
 
         if self._min < float_info.min:
             self._min = float_info.min
@@ -121,4 +108,4 @@ class Float(Integer):
 
         self._class = float
 
-        super(Float).__init__(*args, **kwargs)
+        super(Float, self).__init__(*args, **kwargs)

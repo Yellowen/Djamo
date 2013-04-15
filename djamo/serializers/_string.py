@@ -16,6 +16,8 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
+from djamo.utils import six
+
 from .base import Serializer
 
 
@@ -40,17 +42,17 @@ class String(Serializer):
         """
         super(String, self).validate(key, value)
 
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             raise self.ValidationError("value of '%s' is not an string." % key)
 
         if len(value) < self._min:
-            raise self.ValidationError("Length of '%s's value should be more \
-            that %s character" % (key, self._min))
+            raise self.ValidationError("Length of '%s's value should be more" \
+            "that %s character" % (key, self._min))
 
         if self._max:
             if len(value) > self._max:
-                raise self.ValidationError("Length of '%s's value should be \
-                less that %s character" % (key, self._max))
+                raise self.ValidationError("Length of '%s's value should be" \
+                "less that %s character""" % (key, self._max))
 
     def is_valid_value(self, value):
         """
@@ -59,7 +61,7 @@ class String(Serializer):
         just check value to possiblity of a valid value. But ``validate``
         check other parameter too like field requirement.
         """
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             return True
 
         return False
