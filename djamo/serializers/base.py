@@ -69,6 +69,13 @@ class Serializer(object):
         """
         return self._default
 
+    @property
+    def is_required(self):
+        """
+        Return True if _required set to true.
+        """
+        return self._required
+
     def is_valid_value(self, value):
         """
         Check the value against current serializer policy. The difference

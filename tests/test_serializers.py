@@ -1,3 +1,5 @@
+import pytest
+
 from djamo.base import Client
 from djamo import Collection, Document
 from djamo.serializers import *
@@ -6,9 +8,9 @@ from djamo.serializers import *
 class Car(Document):
     fields = {
         "model": String(min_length=3, max_length=15, required=True),
-        "cost": Float(min=0.0, max=40000.50),
+        "cost": Float(min_value=7.0, max_value=40000.50),
         "owners": List(),
-        "acc": Integer(min=30, max=60),
+        "acc": Integer(min_value=30, max_value=60),
     }
 
 
@@ -27,9 +29,10 @@ class TestSerializers:
         print("\nSerializers test --------------")
         c = self.fixture()
 
-        a = Car({"model": "Some Long string that pass tha mx value",
-                  "cost": 300000000,
-                  "owner": [1, 2, 3, 4],
-                  "acc": 70})
+        a = Car({"model": "sdfsdfasdfasdfasdfasdfasdfasdfasdfasgf"})
+        b = Car()
 
-        c.insert(a)
+        c.insert(b)
+
+        with pytest.raises(String.ValidationError):
+            c.insert(a)

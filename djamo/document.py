@@ -93,7 +93,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
         serializer_name dictionary
         """
         if serializer_name in dummy_cache:
-            if raw_value in dummy_cache[name]:
+            if raw_value in dummy_cache[serializer_name]:
                 return dummy_cache[serializer_name][raw_value]
 
             return default
@@ -200,6 +200,11 @@ class Document(with_metaclass(DocumentMeta, dict)):
 
         Remember to replace <field> with your field name.
         """
+        for field, serializer in self._fields.items():
+            if serializer.is_required and field not in self.keys():
+                raise serializer.ValidationError(
+                    "'%s' field is required" % field)
+
         [self._validate_value(i) for i in self.keys()]
 
     def _serialize_key(self, key):

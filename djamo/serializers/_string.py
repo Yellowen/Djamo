@@ -31,7 +31,7 @@ class String(Serializer):
     """
 
     def __init__(self, min_length=None, max_length=None, *args, **kwargs):
-        self._min = min_length or 0
+        self._min = min_length
         self._max = max_length
 
         super(String, self).__init__(*args, **kwargs)
@@ -41,13 +41,13 @@ class String(Serializer):
         Check for a valid string in given value
         """
         super(String, self).validate(key, value)
+        six.u(value)
 
-        if not isinstance(value, six.string_types):
-            raise self.ValidationError("value of '%s' is not an string." % key)
-
-        if len(value) < self._min:
-            raise self.ValidationError("Length of '%s's value should be more" \
-            "that %s character" % (key, self._min))
+        if self._min is not None:
+            if len(value) < self._min:
+                raise self.ValidationError(
+                    "Length of '%s's value should be more" \
+                    "that %s character" % (key, self._min))
 
         if self._max:
             if len(value) > self._max:
@@ -65,3 +65,15 @@ class String(Serializer):
             return True
 
         return False
+
+    def serialize(self, value, **kwargs):
+        """
+        Serialize the given value.
+        """
+        return six.u(value)
+
+    def deserialize(self, value):
+        """
+        De-serialize the given value
+        """
+        return six.u(value)

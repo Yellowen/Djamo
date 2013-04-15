@@ -26,26 +26,27 @@ class Integer(Serializer):
     """
     Serializer for Integer data.
 
-    :param min: This parameter specify the minimum value of the integer.
+    :param min_value: This parameter specify the minimum value of the integer.
 
-    :param max: This parameter specify the maximum value of the integer.
+    :param max_value: This parameter specify the maximum value of the integer.
 
     """
 
-    def __init__(self, min=None, max=None, klass=int, *args, **kwargs):
+    def __init__(self, min_value=None, max_value=None,
+                 klass=int, *args, **kwargs):
         try:
             from sys import maxint
             MAXSIZE = maxint
         except ImportError:
             MAXSIZE = six.MAXSIZE
 
-        self._min = min or -MAXSIZE - 1
-        self._max = max or MAXSIZE
+        self._min = min_value or -MAXSIZE - 1
+        self._max = max_value or MAXSIZE
 
         if self._min < (-MAXSIZE - 1):
             self._min = -MAXSIZE - 1
 
-        if self._max < MAXSIZE:
+        if self._max > MAXSIZE:
             self._max = MAXSIZE
 
         self._class = klass
@@ -58,19 +59,17 @@ class Integer(Serializer):
         """
         super(Integer, self).validate(key, value)
 
-        if not isinstance(value, self._class):
-            raise self.ValidationError("value of '%s' is not an %s." %
-                                       (key, self._class.__class__.__name__))
+        self._class(value)
 
         if self._min is not None:
             if value < self._min:
-                raise self.ValidationError("'%s's value should be greater \
-                that %s" % (key, self._min))
+                raise self.ValidationError("'%s's value should be greater "
+                "that %s" % (key, self._min))
 
         if self._max is not None:
             if value > self._max:
-                raise self.ValidationError("'%s's value should be \
-                less that %s" % (key, self._max))
+                raise self.ValidationError("'%s's value should be "
+                "less that %s" % (key, self._max))
 
     def is_valid_value(self, value):
         """
@@ -84,28 +83,45 @@ class Integer(Serializer):
 
         return False
 
+    def serialize(self, value, **kwargs):
+        """
+        Serialize the given value.
+        """
+        return self._class(value)
+
+    def deserialize(self, value):
+        """
+        De-serialize the given value
+        """
+        return self._class(value)
+
 
 class Float(Integer):
     """
     Serializer for Long data.
 
-    :param min: This parameter specify the minimum value of the long data.
+    :param min_value: This parameter specify the minimum value of the long
+                      data.
 
-    :param max: This parameter specify the maximum value of the long data.
+    :param max_value: This parameter specify the maximum value of the long
+                      data.
 
     """
-    def __init__(self, min=None, max=None, *args, **kwargs):
+    def __init__(self, min_value=None, max_value=None,
+                 required=False, default=None,
+                 *args, **kwargs):
+
         from sys import float_info
 
-        self._min = min or float_info.min
-        self._max = max or float_info.max
+        self._min = min_value or float_info.min
+        self._max = max_value or float_info.max
+        self._required = required
+        self._default = default
 
         if self._min < float_info.min:
             self._min = float_info.min
 
-        if self._max < float_info.max:
+        if self._max > float_info.max:
             self._max = float_info.max
 
         self._class = float
-
-        super(Float, self).__init__(*args, **kwargs)
