@@ -32,7 +32,29 @@ class TestSerializers:
         a = Car({"model": "sdfsdfasdfasdfasdfasdfasdfasdfasdfasgf"})
         b = Car()
 
-        c.insert(b)
+        with pytest.raises(String.ValidationError):
+            c.insert(a)
 
         with pytest.raises(String.ValidationError):
+            c.insert(b)
+
+        a = Car()
+        a.model = "asdasd"
+
+        with pytest.raises(Float.ValidationError):
+            a.cost = 3
+            c.insert(a)
+
+        a = Car()
+        a.model = "asdasd"
+
+        with pytest.raises(String.ValidationError):
+            a.owners = "asdasdasd"
+            c.insert(a)
+
+        a = Car()
+        a.model = "asdasd"
+
+        with pytest.raises(Integer.ValidationError):
+            a.acc = "asdasdasd"
             c.insert(a)

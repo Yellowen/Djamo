@@ -9,4 +9,4 @@ from djamo.base import Client
 client = Client(config={"name": "djamo_test"})
 client.drop_database()
 
-pytest.main("--ignore=env -s %s" % (" ".join(sys.argv[1:])))
+pytest.main("--ignore=env --ignore=envpypy -s %s" % (" ".join(sys.argv[1:])))

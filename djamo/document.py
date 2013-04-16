@@ -158,6 +158,7 @@ class Document(with_metaclass(DocumentMeta, dict)):
         if name in self._fields:
 
             if not self._fields[name].is_valid_value(value):
+                self._fields[name].validate(name, value)
                 new_value = self._fields[name].deserialize(value)
                 # TODO: Should we put the value into cache ?
                 #       Since setting item to dictionary will

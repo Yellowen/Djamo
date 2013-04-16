@@ -36,11 +36,11 @@ class List(Serializer):
         and riase :py:exception: `~djamo.serializers.Serializer.ValidationError`
         if value was not valid.
         """
-        super(List, self).validate(self, key, value)
+        super(List, self).validate(key, value)
 
         if not isinstance(value, (list, tuple)):
-            raise self.ValidationError("'%s's value should be a instance of \
-            list or tuple." % key)
+            raise self.ValidationError("'%s's value should be a instance of"
+                                       "list or tuple." % key)
 
     def serialize(self, value, **kwargs):
         """

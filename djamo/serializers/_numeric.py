@@ -59,8 +59,11 @@ class Integer(Serializer):
         """
         super(Integer, self).validate(key, value)
 
-        self._class(value)
-
+        try:
+            self._class(value)
+        except ValueError:
+            raise self.ValidationError("'%s's value should be an instance"
+                                       "of %s" % (key, self._class))
         if self._min is not None:
             if value < self._min:
                 raise self.ValidationError("'%s's value should be greater "
