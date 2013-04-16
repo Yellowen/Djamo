@@ -37,6 +37,7 @@ nosetests.xml
 *.pyc
 docs/build
 env/
+envpypy/
 MANIFEST
 __pycache__/*
 results/*
