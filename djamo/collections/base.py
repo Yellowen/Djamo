@@ -285,10 +285,6 @@ class BaseCollection (MongoCollection, object):
                       awaits the next group commit before returning.
 
         """
-        document = self._get_document()
-        if isinstance(to_save, document):
-            to_save = to_save.serialize()
-
         return super(BaseCollection, self).save(to_save, *args, **kwargs)
 
     def update(self, spec, doc, *args, **kwargs):

@@ -45,7 +45,7 @@ class DjangoUser(Serializer):
         """
         Check for a valid Django user in given value
         """
-        super(DjangoUser, self).validate(value)
+        super(DjangoUser, self).validate(key, value)
 
         if not isinstance(value, self._user_model):
             raise self.ValidationError("value of '%s' is not a Django \
@@ -55,11 +55,12 @@ class DjangoUser(Serializer):
         """
         Convert the Django User instance to an string.
         """
+
         if isinstance(value, self._user_model):
             return getattr(value, self.user_field)
 
         raise TypeError(
-            "'value' should be an instance of '%s'" % self._user_model
+            "'value' should be an instance of '%s'" % self._user_model.__name__
         )
 
     def deserialize(self, value):

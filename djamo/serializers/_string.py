@@ -41,7 +41,8 @@ class String(Serializer):
         Check for a valid string in given value
         """
         super(String, self).validate(key, value)
-        six.u(value)
+
+        self.u(value)
 
         if self._min is not None:
             if len(value) < self._min:
@@ -76,4 +77,22 @@ class String(Serializer):
         """
         De-serialize the given value
         """
-        return six.u(value)
+        return self.u(value)
+
+    def u(self, value):
+        """
+        cast the given value to unicode
+
+        """
+        if six.PY3:
+            return value
+        else:
+
+            if isinstance(value, str):
+                return unicode(value)
+
+            elif isinstance(value, unicode):
+                return value
+
+            else:
+                return six.u(value)
