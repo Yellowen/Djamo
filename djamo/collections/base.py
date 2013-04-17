@@ -119,7 +119,8 @@ class BaseCollection (MongoCollection, object):
 
         def to_data(document):
             # Return the serialized value of the document
-            if hasattr(document, "serialize"):
+            if isinstance(document, Document):
+                document.save()
                 return document.serialize()
             else:
                 return document
