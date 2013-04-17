@@ -279,6 +279,9 @@ class Document(with_metaclass(DocumentMeta, dict)):
 
         return self
 
+    def save(self, *args, **kwargs):
+        pass
+
     @classmethod
     def deserialize_item(cls, item):
         """
