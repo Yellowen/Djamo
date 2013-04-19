@@ -1,4 +1,9 @@
-graft docs
-graft djamo
+recursive-include djamo/*
+recursive-include docs/*
+recursive-include tests/*
+recursive-exclude docs/build/*
 
-include *.py *.json *.rst *.html COPYING
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
+include COPYING README.md
