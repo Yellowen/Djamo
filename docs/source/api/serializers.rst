@@ -18,10 +18,6 @@ Numeric Serializers
    :members:
    :private-members:
 
-.. autoclass:: djamo.serializers.Long
-   :members:
-   :private-members:
-
 .. autoclass:: djamo.serializers.Float
    :members:
    :private-members:
