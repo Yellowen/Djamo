@@ -9,11 +9,11 @@ body {
 }
 
 header {
-    Background: #374E40;
+    Background: #337024;
     width: 100%;
     height: 495px;
     position: absolute;
-    border-bottom: 7px solid #698961;
+    border-bottom: 7px solid #1C511A;
 }
 
 header h1 {
@@ -82,13 +82,14 @@ nav a:visited {
 }
 
 a {
-    color: #735e45;
+    color: #902742;
     text-decoration: none;
 }
 a:hover {
-    color: #a6261b;
+    color: #CD475D;
+    text-decoration: underline;
 }
 
 a:visited {
-    color: #735e45;
+    color: #902742;
 }
