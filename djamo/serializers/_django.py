@@ -48,8 +48,8 @@ class DjangoUser(Serializer):
         super(DjangoUser, self).validate(key, value)
 
         if not isinstance(value, self._user_model):
-            raise self.ValidationError("value of '%s' is not a Django \
-            user." % key)
+            raise self.ValidationError("value of '%s' is not a Django"
+            " user." % key)
 
     def serialize(self, value, **kwargs):
         """
