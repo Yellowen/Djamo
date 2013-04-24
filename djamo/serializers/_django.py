@@ -47,9 +47,10 @@ class DjangoUser(Serializer):
         """
         super(DjangoUser, self).validate(key, value)
 
-        if not isinstance(value, self._user_model):
+        print "DJAMO: ", self._user_model, isinstance(value, self._user_model)
+        if not isinstance(value, (self._user_model, int)):
             raise self.ValidationError("value of '%s' is not a Django"
-            " user." % key)
+            " user or an integer" % key)
 
     def serialize(self, value, **kwargs):
         """
