@@ -22,7 +22,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='Djamo',
-      version='2.67.0-rc1',
+      version='2.67.0-rc2',
       description='Yet another Mongodb driver for Django',
       author='Sameer Rahmani',
       author_email='lxsameer@gnu.org',
