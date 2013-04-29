@@ -72,4 +72,5 @@ class List(Serializer):
 
         return False
 
+
 # TODO: Add a Set serializer

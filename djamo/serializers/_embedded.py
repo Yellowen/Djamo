@@ -50,7 +50,7 @@ class EmbeddedDocument(Serializer):
         """
         Serialize the given value.
         """
-        return self.document(value).serializer()
+        return self.document(value).serialize()
 
     def deserialize(self, value):
         """
