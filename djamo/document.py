@@ -109,11 +109,11 @@ class Document(with_metaclass(DocumentMeta, dict)):
         else:
             dummy_cache[cache_name] = {raw_value: value}
 
-    def __getattr__(self, name):
-        if name in self.keys():
+    def __getattribute__(self, name):
+        if name in self:
             return self[name]
 
-        raise AttributeError("No attribute called '%s'." % name)
+        return super(Document, self).__getattribute__(name)
 
     def __getitem__(self, name):
         if name in self._fields:
@@ -152,7 +152,11 @@ class Document(with_metaclass(DocumentMeta, dict)):
             return super(Document, self).__getitem__(name)
 
     def __setattr__(self, name, value):
-        self[name] = value
+        if hasattr(self, name):
+            super(Document, self).__setattr__(name, value)
+
+        else:
+            self[name] = value
 
     def __setitem__(self, name, value):
         if name in self._fields:
