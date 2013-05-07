@@ -53,6 +53,8 @@ code and do some query on database::
 Here you can see that a :py:class:`~djamo.document.Document` subclass can be initialize eather by passing a dictionary or by using keyword argyments. Also you must know about how to access your document attributes, since document is a subclass of dict
 class you can access to a document attributes eather using normal dictionary indexing or class attributes.
 
+.. warning:: When you want to use instance attributes to access you document data (key/values) you should be aware of a mechanism. By default class and instance attributes of document have higher priority to document data (key/values of document dict structure) to **Djamo**. This means that if your document have class attribute in its class body for example "some_var" and you want to set a key with the same name in your document data using instance attribute approach, the specified value will assign to "some_var" attribute instead of the "some_var" key. Make sure to read :doc:`whatnottodo` for more information.
+
 We used :py:func:`~djamo.collections.BaseCollection.insert` method of :py:class:`~djamo.collections.Collection` to put a list of students in our database. Remember documents are ``dict`` subclass and MongoDB did not force to stick with the same keys/values for your document, so your document can have any key/value pair your want. :py:func:`~djamo.collections.BaseCollection.insert` method will return a list of ``_id``s of
 the inserted documents or `None` if ``manipulate`` is False.
 

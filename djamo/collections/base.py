@@ -505,7 +505,10 @@ class BaseCollection (MongoCollection, object):
                            performed OR any other type to be used as the value
                            for a query for "_id".
         """
-        return self.find(spec_or_id, limit=-1, *args, **kwargs)
+        result = self.find(spec_or_id, limit=-1, *args, **kwargs)
+        if result.count():
+            return result[0]
+        return None
 
     def __query__(self, key, value, document):
         """

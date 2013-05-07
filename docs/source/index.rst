@@ -26,6 +26,9 @@ Welcome to Djamo's documentation!
    :doc:`otherresources`
 	Find more resources to learn about **MongoDB**, **PyMong** and **Djamo**
 
+   :doc:`whatnottodo`
+        What should not to do, **Djamo** limitations.
+
 
 Report Bugs
 -----------
