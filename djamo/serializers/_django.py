@@ -31,13 +31,15 @@ class DjangoUser(Serializer):
 
         self.user_field = user_field
 
-        if settings.AUTH_USER_MODEL != "auth.User":
-            from django.contrib.auth import get_user_model
-            self._user_model = get_user_model()
+        settings_auth_model = getattr(settings, "AUTH_USER_MODEL", "auth.User")
 
-        else:
+        if settings_auth_model == "auth.User":
             from django.contrib.auth.models import User
             self._user_model = User
+
+        else:
+            from django.contrib.auth import get_user_model
+            self._user_model = get_user_model()
 
         super(DjangoUser, self).__init__(*args, **kwargs)
 
