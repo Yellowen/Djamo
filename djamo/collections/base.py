@@ -16,12 +16,56 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
+import sys
+
 from pymongo.collection import Collection as MongoCollection
 
 from djamo.document import Document
+from djamo.options import Options
+from djamo.utils import six
 
 
-class BaseCollection (MongoCollection, object):
+class CollectionMeta(type):
+    """
+    Meta class for collection object. This class is responsible for creating
+    ``Collection`` instances.
+
+    .. Note:: This class is for Djamo internal usage.
+    """
+
+    def __new__(cls, name, bases, attrs):
+
+        attr_meta = attrs.pop('Meta', None)
+        ## module = attrs.pop('__module__', None)
+
+        ## objattrs = []
+        ## if module:
+        ##     objattrs["__module__"] = module
+
+        new_class = type.__new__(cls, name, bases, attrs)
+
+        if not attr_meta:
+            meta = getattr(new_class, 'Meta', None)
+
+        else:
+            meta = attr_meta
+
+        if getattr(meta, 'app_label', None) is None:
+            # Figure out the app_label by looking one level up.
+            # For 'django.contrib.sites.models', this would be 'sites'.
+            model_module = sys.modules[new_class.__module__]
+            kwargs = {"app_label": model_module.__name__.split('.')[-2]}
+        else:
+            kwargs = {}
+
+        if "document" in attrs:
+            kwargs["document_name"] = attrs["document"].__class__.__name__
+
+        setattr(new_class, "_meta", Options(**kwargs))
+        return new_class
+
+
+class BaseCollection (six.with_metaclass(CollectionMeta, MongoCollection)):
     """
     Djamo implementation of Mongodb collection.
     """
