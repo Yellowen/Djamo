@@ -44,6 +44,7 @@ class CollectionMeta(type):
 
         new_class = type.__new__(cls, name, bases, attrs)
 
+        print "!!!!!!! ", attrs
         if not attr_meta:
             meta = getattr(new_class, 'Meta', None)
 
@@ -61,7 +62,7 @@ class CollectionMeta(type):
         if "document" in attrs:
             kwargs["document_name"] = attrs["document"].__class__.__name__
 
-        setattr(new_class, "_meta", Options(**kwargs))
+        setattr(new_class, "_meta", Options(meta, **kwargs))
         return new_class
 
 

@@ -16,7 +16,6 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
-
 from djamo.utils import six
 
 
@@ -25,9 +24,19 @@ class Options(object):
     app_label = ""
     verbose_name = ""
     verbose_name_plural = ""
+    document_name = ""
 
-    def __init__(self, **kwargs):
+    def __init__(self, meta, **kwargs):
+        print ">>>> OPTIONS", kwargs
+
         for key, value in six.iteritems(kwargs):
-            my_attr = getattr(self, key, None)
-            if my_attr:
-                setattr(self, key, value)
+            self.set_attr(key, value)
+
+        if meta:
+            for key, value in  six.iteritems(meta.__dict__):
+                self.set_attr(key, value)
+
+    def set_attr(self, key, value):
+        my_attr = getattr(self, key, None)
+        if my_attr:
+            setattr(self, key, value)

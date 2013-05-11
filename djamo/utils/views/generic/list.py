@@ -19,6 +19,8 @@
 from django.views.generic.list import MultipleObjectMixin as MOM
 from django.core.exceptions import ImproperlyConfigured
 from django.views.generic.base import TemplateResponseMixin, View
+from django.utils.translation import ugettext as _
+from django.http import Http404
 
 
 class MultipleObjectMixin(MOM):
@@ -52,7 +54,7 @@ class MultipleObjectMixin(MOM):
 
         elif hasattr(object_list, 'collection'):
             return '%s_list' % \
-                   object_list.collection().__class__.__name__.lower()
+                   object_list.collection.__class__.__name__.lower()
 
         elif self.collection is not None:
             try:
@@ -68,7 +70,26 @@ class BaseListView(MultipleObjectMixin, View):
     """
     A base view for displaying a list of objects.
     """
-    pass
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        allow_empty = self.get_allow_empty()
+
+        if not allow_empty:
+            # When pagination is enabled and object_list is a queryset,
+            # it's better to do a cheap query than to load the unpaginated
+            # queryset in memory.
+            if (self.get_paginate_by(self.object_list) is not None
+                and hasattr(self.object_list, 'exists')):
+                is_empty = not self.object_list.exists()
+            else:
+                is_empty = len(self.object_list) == 0
+            if is_empty:
+                raise Http404(_("Empty list and '%(class_name)s.allow_empty' is False.")
+                        % {'class_name': self.__class__.__name__})
+        context = self.get_context_data(object_list=self.object_list)
+        return self.render_to_response(context)
+
+
 
 
 class MultipleObjectTemplateResponseMixin(TemplateResponseMixin):
