@@ -20,14 +20,15 @@ from djamo.utils import six
 
 
 class Options(object):
-
+    """
+    This class represent the collection options.
+    """
     app_label = ""
     verbose_name = ""
     verbose_name_plural = ""
     document_name = ""
 
     def __init__(self, meta, **kwargs):
-        print ">>>> OPTIONS", kwargs
 
         for key, value in six.iteritems(kwargs):
             self.set_attr(key, value)
@@ -38,5 +39,5 @@ class Options(object):
 
     def set_attr(self, key, value):
         my_attr = getattr(self, key, None)
-        if my_attr:
+        if my_attr is not None:
             setattr(self, key, value)

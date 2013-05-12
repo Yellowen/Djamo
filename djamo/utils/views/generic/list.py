@@ -116,7 +116,9 @@ class MultipleObjectTemplateResponseMixin(TemplateResponseMixin):
         # generated ones.
         if hasattr(self.object_list, 'collection'):
             opts = self.object_list.collection._meta
-            names.append("%s/%s%s.html" % (opts.app_label, opts.document_name, self.template_name_suffix))
+            names.append("%s/%s%s.html" % (opts.app_label.lower(),
+                                           opts.document_name.lower(),
+                                           self.template_name_suffix))
 
         return names
 
