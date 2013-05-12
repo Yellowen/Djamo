@@ -25,71 +25,7 @@ from django.utils.encoding import force_text
 from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
 from django.views.generic.detail import (SingleObjectMixin,
                         SingleObjectTemplateResponseMixin, BaseDetailView)
-
-
-class FormMixin(ContextMixin):
-    """
-    A mixin that provides a way to show and handle a form in a request.
-    """
-
-    initial = {}
-    form_class = None
-    success_url = None
-
-    def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
-        """
-        return self.initial.copy()
-
-    def get_form_class(self):
-        """
-        Returns the form class to use in this view
-        """
-        return self.form_class
-
-    def get_form(self, form_class):
-        """
-        Returns an instance of the form to be used in this view.
-        """
-        return form_class(**self.get_form_kwargs())
-
-    def get_form_kwargs(self):
-        """
-        Returns the keyword arguments for instantiating the form.
-        """
-        kwargs = {'initial': self.get_initial()}
-        if self.request.method in ('POST', 'PUT'):
-            kwargs.update({
-                'data': self.request.POST,
-                'files': self.request.FILES,
-            })
-        return kwargs
-
-    def get_success_url(self):
-        """
-        Returns the supplied success URL.
-        """
-        if self.success_url:
-            # Forcing possible reverse_lazy evaluation
-            url = force_text(self.success_url)
-        else:
-            raise ImproperlyConfigured(
-                "No URL to redirect to. Provide a success_url.")
-        return url
-
-    def form_valid(self, form):
-        """
-        If the form is valid, redirect to the supplied URL.
-        """
-        return HttpResponseRedirect(self.get_success_url())
-
-    def form_invalid(self, form):
-        """
-        If the form is invalid, re-render the context data with the
-        data-filled form and errors.
-        """
-        return self.render_to_response(self.get_context_data(form=form))
+from django.views.generic.edit import FormMixin
 
 
 class ModelFormMixin(FormMixin, SingleObjectMixin):
@@ -203,12 +139,14 @@ class BaseFormView(FormMixin, ProcessFormView):
     """
     A base view for displaying a form
     """
+    pass
 
 
 class FormView(TemplateResponseMixin, BaseFormView):
     """
     A view for displaying a form, and rendering a template response.
     """
+    pass
 
 
 class BaseCreateView(ModelFormMixin, ProcessFormView):
@@ -291,6 +229,7 @@ class BaseDeleteView(DeletionMixin, BaseDetailView):
 
     Using this base class requires subclassing to provide a response mixin.
     """
+    pass
 
 
 class DeleteView(SingleObjectTemplateResponseMixin, BaseDeleteView):
