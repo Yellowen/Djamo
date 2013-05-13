@@ -4,6 +4,7 @@
   Provide some caching backend (e.g redis) for serialize/deseralize operation
   Pass the args (arguments that generated from using dot notation of mongo key) to its serializer object
   create edit generic view and document form
+  make support for Field.localize
 
 *  Bugs
 

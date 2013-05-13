@@ -62,7 +62,6 @@ class CollectionMeta(type):
             kwargs["document_name"] = attrs["document"].__name__
 
         setattr(new_class, "_meta", Options(meta, **kwargs))
-        #print ">>>!!! ", dir(new_class._meta), new_class._meta.app_label, getattr(new_class._meta, "document_name", 1223)
         return new_class
 
 

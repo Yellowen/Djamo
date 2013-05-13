@@ -17,6 +17,8 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # -----------------------------------------------------------------------------
 
+from django.forms.fields import FloatField, IntegerField
+
 from djamo.utils import six
 
 from .base import Serializer
@@ -33,7 +35,8 @@ class Integer(Serializer):
     """
 
     def __init__(self, min_value=None, max_value=None,
-                 klass=int, *args, **kwargs):
+                 klass=int, form_class=IntegerField,
+                 *args, **kwargs):
         try:
             from sys import maxint
             MAXSIZE = maxint
@@ -51,7 +54,7 @@ class Integer(Serializer):
 
         self._class = klass
 
-        super(Integer, self).__init__(*args, **kwargs)
+        super(Integer, self).__init__(form_class, *args, **kwargs)
 
     def validate(self, key, value):
         """
@@ -98,6 +101,17 @@ class Integer(Serializer):
         """
         return self._class(value)
 
+    def form_field_factory(self, **kwargs):
+        """
+        A form field factory to create and returns and instance of a suitable
+        form field for current document field.
+
+        :param **kwargs: All the kwargs will pass to form_class constructer.
+        """
+
+        return super(Integer, self).form_field_factory(min_value=self._min,
+                                                       max_value=self._max)
+
 
 class Float(Integer):
     """
@@ -112,6 +126,8 @@ class Float(Integer):
     """
     def __init__(self, min_value=None, max_value=None,
                  required=False, default=None,
+                 form_class=FloatField,
+                 form_widget=None,
                  *args, **kwargs):
 
         from sys import float_info
@@ -128,3 +144,6 @@ class Float(Integer):
             self._max = float_info.max
 
         self._class = float
+
+        self.form_class = form_class
+        self.form_widget = form_widget

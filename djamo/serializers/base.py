@@ -63,10 +63,6 @@ class Serializer(object):
             from django.forms import CharField
             self.form_class = CharField
 
-        if not self._form_widget:
-            from django.forms import TextInput
-            self.form_widget = TextInput()
-
     def validate(self, key, value):
         """
         Validate the ``value`` parameter against current serializer policy
@@ -120,11 +116,19 @@ class Serializer(object):
         :param **kwargs: All the kwargs will pass to form_class constructer.
         """
 
-        return self.form_class(label=self.verbose, required=self._required,
-                                initial=self._default,
-                                widget=self._form_widget,
-                                help_text=self.help_text,
-                                **kwargs)
+        construct_data = {
+            "label": self.verbose,
+            "required": self._required,
+            "initial": self._default,
+            "help_text": self.help_text,
+        }
+
+        if self.form_widget:
+            construct_data["widget"] = self._form_widget
+
+        construct_data.update(kwargs)
+
+        return self.form_class(**construct_data)
 
     class ValidationError(Exception):
         """
