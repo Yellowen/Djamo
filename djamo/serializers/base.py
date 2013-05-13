@@ -30,15 +30,42 @@ class Serializer(object):
     is responsible for serializing/de-serializing a value for an specific
     field of a document that specified by user in document class.
 
+    :param verbose: Verbose name of the current field.
+
     :param required: If ``True`` the field is required and should have a value
                      in transaction time. default ``False``
 
     :param default: Default value of the field.
+
+    :param help_text: Help text to show with forms that represent this field.
+
+    :param form_class: A form field class to use in factory
+                       (default: CharField)
+
+    :param form_widget: A form widget *object* to use with form_class
+                        (default: TextInput)
+
     """
 
-    def __init__(self, required=False, default=None):
+
+    def __init__(self, verbose=None, required=False, default=None,
+                 help_text=None, form_class=None, form_widget=None):
+
+
         self._required = required
         self._default = default
+        self.verbose = verbose or self.__class__.__name__.lower()
+        self.help_text = help_text
+        self.form_class = form_class
+        self.form_widget = form_widget
+
+        if not self.form_class:
+            from django.forms import CharField
+            self.form_class = CharField
+
+        if not self._form_widget:
+            from django.forms import TextInput
+            self.form_widget = TextInput()
 
     def validate(self, key, value):
         """
@@ -84,6 +111,20 @@ class Serializer(object):
         check other parameter too like field requirement.
         """
         raise self.NotImplemented()
+
+    def form_field_factory(self, **kwargs):
+        """
+        A form field factory to create and returns and instance of a suitable
+        form field for current document field.
+
+        :param **kwargs: All the kwargs will pass to form_class constructer.
+        """
+
+        return self.form_class(label=self.verbose, required=self._required,
+                                initial=self._default,
+                                widget=self._form_widget,
+                                help_text=self.help_text,
+                                **kwargs)
 
     class ValidationError(Exception):
         """
