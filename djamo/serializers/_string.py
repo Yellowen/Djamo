@@ -79,7 +79,7 @@ class String(Serializer):
         """
         return self.u(value)
 
-    def form_field_factory(self, **kwargs):
+    def form_field_factory(self, name, **kwargs):
         """
         A form field factory to create and returns and instance of a suitable
         form field for current document field.
@@ -87,7 +87,8 @@ class String(Serializer):
         :param **kwargs: All the kwargs will pass to form_class constructer.
         """
 
-        return super(String, self).form_field_factory(min_length=self._min,
+        return super(String, self).form_field_factory(name,
+                                                      min_length=self._min,
                                                       max_length=self._max)
 
     def u(self, value):

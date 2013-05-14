@@ -18,12 +18,13 @@
 # -----------------------------------------------------------------------------
 
 from django.forms import Form
+from django.forms.forms import DeclarativeFieldsMetaclass
 
 from djamo.utils import six
 from djamo.options import Options
 
 
-class DocumentFormMeta(type):
+class DocumentFormMeta(DeclarativeFieldsMetaclass):
     """
     Meta class for DocumentForm object. This class is responsible for creating
     ``DocumentForm`` instances.
@@ -33,21 +34,55 @@ class DocumentFormMeta(type):
 
     def __new__(cls, name, bases, attrs):
 
-        attr_meta = attrs.pop('Meta', None)
-        new_class = type.__new__(cls, name, bases, attrs)
+        new_class = super(DocumentFormMeta, cls).__new__(cls, name, bases, attrs)
 
-        if not attr_meta:
+        if hasattr(new_class, "Meta"):
             meta = getattr(new_class, 'Meta', None)
-
+            delattr(new_class, "Meta")
         else:
-            meta = attr_meta
-
-        if not hasattr(meta, "document"):
-            raise AssertionError("No 'document' specified")
+            meta = None
 
         setattr(new_class, "_meta", Options(meta))
         return new_class
 
 
 class DocumentForm(six.with_metaclass(DocumentFormMeta, Form)):
-    pass
+    """
+    A ModelForm like class to use with Djamo documents.
+
+    Its usage is like Django ModelForm with some extra functionallities. take
+    a look at this example::
+
+        from djamo.utils.forms import DocumentFrom
+
+        class StudentForm(DocumentForm):
+            class Meta:
+                document = Student
+                include = ["name", "age"]
+                attributes = {"name": TextInput(
+                                          attrs={"placeholder": "Name ..."})}
+
+
+    """
+    def __init__(self, *args, **kwargs):
+
+        super(DocumentForm, self).__init__(*args, **kwargs)
+
+        include_list = set(self._meta.include)
+        exclude_list = set(self._meta.exclude)
+
+        try:
+
+            fields = self._meta.document._fields
+        except AttributeError:
+            fields = {}
+
+        if include_list - set(fields.keys()):
+            raise AssertionError("You have some fields in 'include' attribute"
+                                 "of 'Meta' class")
+
+        fields_keys = set(fields.keys()) - exclude_list
+
+        for key in fields_keys:
+            attrs = self._meta.attributes.get(key, {})
+            self.fields[key] =  fields[key].form_field_factory(key, **attrs)

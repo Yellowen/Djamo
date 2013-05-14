@@ -101,7 +101,7 @@ class Integer(Serializer):
         """
         return self._class(value)
 
-    def form_field_factory(self, **kwargs):
+    def form_field_factory(self, name, **kwargs):
         """
         A form field factory to create and returns and instance of a suitable
         form field for current document field.
@@ -109,7 +109,8 @@ class Integer(Serializer):
         :param **kwargs: All the kwargs will pass to form_class constructer.
         """
 
-        return super(Integer, self).form_field_factory(min_value=self._min,
+        return super(Integer, self).form_field_factory(name,
+                                                       min_value=self._min,
                                                        max_value=self._max)
 
 

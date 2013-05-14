@@ -54,7 +54,7 @@ class Serializer(object):
 
         self._required = required
         self._default = default
-        self.verbose = verbose or self.__class__.__name__.lower()
+        self.verbose = verbose;
         self.help_text = help_text
         self.form_class = form_class
         self.form_widget = form_widget
@@ -108,7 +108,7 @@ class Serializer(object):
         """
         raise self.NotImplemented()
 
-    def form_field_factory(self, **kwargs):
+    def form_field_factory(self, name, **kwargs):
         """
         A form field factory to create and returns and instance of a suitable
         form field for current document field.
@@ -117,7 +117,7 @@ class Serializer(object):
         """
 
         construct_data = {
-            "label": self.verbose,
+            "label": self.verbose or name,
             "required": self._required,
             "initial": self._default,
             "help_text": self.help_text,

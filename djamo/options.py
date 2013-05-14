@@ -21,12 +21,16 @@ from djamo.utils import six
 
 class Options(object):
     """
-    This class represent the collection options.
+    This class represent options used any where.
     """
     app_label = ""
     verbose_name = ""
     verbose_name_plural = ""
     document_name = ""
+    attributes = {}
+    document = ""
+    include = []
+    exclude = []
 
     def __init__(self, meta, **kwargs):
 
