@@ -14,3 +14,6 @@ Why do you build an other one?
 Why did you start Djamo version from 2.67?
 ------------------------------------------
 Because I'm a big fan of 'Steins Gate' anime. The main character "Okarin" use 2.67 version always as the begining version of his works.
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Yellowen/djamo/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
